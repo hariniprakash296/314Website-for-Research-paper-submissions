@@ -33,3 +33,12 @@ command4 = """CREATE TABLE IF NOT EXISTS
 Reviewer(user_id INTEGER, max_papers INTEGER, FOREIGN KEY(user_id) REFERENCES User(user_id))"""
 
 cursor.execute(command4)
+
+#add to User
+
+cursor.execute("INSERT INTO User VALUES (001, 'ashleylogan19@gmail.com', '19ash204yolo', 'Ashley Logan', 'Author')")
+cursor.execute("INSERT INTO User VALUES (002, 'jenniferhaul33@gmail.com', 'jen2haul005', 'Jennifer Haul', 'Conference Chair')")
+cursor.execute("INSERT INTO User VALUES (003, 'pranovsidhvik@gmail.com', 'sid@pranic292', 'Pranov Sidhvik', 'Reviewer')")
+cursor.execute("INSERT INTO User VALUES (004, 'chanyouman3teng@gmail.com', 'chan82$nasafol', 'Chan You Man Teng', 'System Admin')")
+
+#add to Paper
