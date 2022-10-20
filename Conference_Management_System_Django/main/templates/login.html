@@ -3,21 +3,29 @@
     {% load static from staticfiles %}
     <link rel="stylesheet" href="{% static '/css/style_signup_login_form.css' %}">
 {% endblock %}
+
 {% block content %}
     {{ message }}
     <div class="divFormContainer">
         <div class="divLoginSignup">
             <form action="login_handle" method="post">
             {% csrf_token %}
-                <input type="text" placeholder="e-mail" name="email">
+                <a style="align-content: left;">Username:</a>
+                <input type="text" placeholder="Please enter your email" name="email">
                  <br>
-                <input type="password" placeholder="password" name="password">
+                 <a>Password:</a>
+                <input type="password" placeholder="Please enter your password" name="password">
                  <br>
 
-                <input type="submit" value="Log in">
+                <input style="width: 100%;
+                color: aliceblue;
+                background-position: right bottom, left top;
+                background-repeat: no-repeat, repeat; 
+                background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));" type="submit" value="Log in">
             </form>
         </div>
     </div>
 
 
 {% endblock %}
+</span>
