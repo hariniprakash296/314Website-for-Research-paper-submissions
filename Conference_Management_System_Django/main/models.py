@@ -30,16 +30,16 @@ class Reviewer(models.Model):
     
     
 #relationships
-class Bid(model.Model):
+class Bids(models.Model):
     reviewer_id = models.ForeignKey('User',on_delete=models.CASCADE)
     paper_id = models.ForeignKey('Paper',on_delete=models.CASCADE)
     is_bidding = models.BooleanField(default=True)
 
-class Author(model.Model):
+class Authors(models.Model):
     author_id = models.ForeignKey('User',on_delete=models.CASCADE)
     paper_id = models.ForeignKey('Paper',on_delete=models.CASCADE)
 
-class Review(models.Model):
+class Reviews(models.Model):
     review_id = models.TextField(null=False,primary_key=True)
     paper_id = models.ForeignKey('Paper',on_delete=models.CASCADE)
     reviewer_id = models.ForeignKey('User',on_delete=models.CASCADE)
@@ -47,9 +47,9 @@ class Review(models.Model):
     reviewer_rating = models.TextField(null=False)
     author_rating = models.TextField(null=False)
     
-class ReviewComment(models.Model):
+class ReviewComments(models.Model):
     comment_id = models.TextField(null=False,primary_key=True)
-    review_id = models.ForeignKey('Review',on_delete=models.CASCADE)
+    review_id = models.ForeignKey('Reviews',on_delete=models.CASCADE)
     commenter_id = models.ForeignKey('User',on_delete=models.CASCADE)
     comment_text = models.TextField(null=False)
     
