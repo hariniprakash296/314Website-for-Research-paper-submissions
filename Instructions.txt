@@ -1,0 +1,11 @@
+1. installing django
+pip install django
+
+2. To run without problems install requirements
+
+pip install -r requirements.txt
+
+3. To view website and changes
+
+python manage.py migrate
+python manage.py runserver
