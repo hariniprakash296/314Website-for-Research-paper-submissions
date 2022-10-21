@@ -140,8 +140,8 @@ def login_handle(request):
             user_type = None
             max_age = 60 * 30
             try:
-                user = models.User.objects.get(email=email,password=hashed_password)
-                user_type = user.type
+                user = models.User.objects.get(login_email=email,login_pw=hashed_password)
+                user_type = user.user_type
                 try:
                     hashed_user_type = hashlib.sha224(user_type.encode('utf-8')).hexdigest()
                     context = {"islogged_in":True,"user_type":hash_string(user_type)}
