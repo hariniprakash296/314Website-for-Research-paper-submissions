@@ -21,8 +21,8 @@
 
 .divLoginSignup input[type=submit] {
   width: 100%;
-  background-color: #4CAF50;
-  color: white;
+  background-color: aliceblue;
+  color: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
@@ -39,12 +39,23 @@
 }
 .divLoginSignup {
   border-radius: 5px;
-  background-color: #f2f2f2;
+  background-position: right bottom, left top;
+  background-repeat: no-repeat, repeat; 
+  background-image: linear-gradient(to bottom right, rgb(178, 11, 249),rgb(30, 63, 250),rgb(30, 250, 243));
   padding: 20px;
-    width:30%;
+  width:70%;
+  height: 50%;
+  color: aliceblue;
+  font-family: 'Brush Script-MT';
 }
 
 textarea {
-  width:100%;
-  
+  width:50%;
+  background-color: aqua;
 }
+
+body{
+  background-image: linear-gradient(to bottom right,rgb(250, 232, 176), #eac2fa, #a6fcff);
+  background-repeat: no-repeat, repeat;
+}
+

@@ -1,7 +1,9 @@
+<div class="background">
 {%extends "upper_menu.html" %}
 {% block head %}
     {% load static from staticfiles %}
     <link rel="stylesheet" href="{% static '/css/style_signup_login_form.css' %}">
+    <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -17,15 +19,11 @@
                 <input type="password" placeholder="Please enter your password" name="password">
                  <br>
 
-                <input style="width: 100%;
-                color: aliceblue;
-                background-position: right bottom, left top;
-                background-repeat: no-repeat, repeat; 
-                background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));" type="submit" value="Log in">
+                <input type="submit" value="Log in">
             </form>
         </div>
     </div>
 
 
 {% endblock %}
-</span>
+</div>

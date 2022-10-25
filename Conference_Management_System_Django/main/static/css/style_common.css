@@ -1,0 +1,4 @@
+.background{
+    background-image: linear-gradient(to bottom right,rgb(250, 232, 176), #eac2fa, #a6fcff);
+    background-repeat: no-repeat, repeat;
+}
