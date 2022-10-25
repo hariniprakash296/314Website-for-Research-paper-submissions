@@ -120,8 +120,6 @@ def login(request):
     is_admin_logged_in = check_admin_login(request)
     return render(request,"login.html",{"islogged_in":islogged_in,'message':"","is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
 def login_handle(request):
-    islogged_in = check_login(request)
-    is_admin_logged_in = check_admin_login(request)
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -143,41 +141,43 @@ def login_handle(request):
                 user = models.User.objects.get(login_email=email,login_pw=hashed_password)
                 user_type = user.user_type
                 try:
+                    if user_type == '0':
+                        #0 = system admin
+                        template_name = "admin_homepage.html"
+                        
+                    elif user_type == '1':
+                        #1 = conference chair
+                        template_name = "conference_chair_homepage.html"
+                        
+                    elif user_type == '2':
+                        #2 = reviewer
+                        template_name = "reviewer_homepage.html"
+                        
+                    elif user_type == '3':
+                        #3 = author
+                        template_name = "author_homepage.html"
+                        
                     hashed_user_type = hashlib.sha224(user_type.encode('utf-8')).hexdigest()
                     context = {"islogged_in":True,"user_type":hash_string(user_type)}
-                    response = render(request, "index.html",context)
+                    response = render(request, template_name, context)
                     expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
                                                          "%a, %d-%b-%Y %H:%M:%S GMT")
-
-
                     response.set_cookie(key="email", value=email, max_age=max_age, expires=expires)
-                    if user_type == "chair":
-                        chair = models.Chair.objects.get(email=email,password=hashed_password)
-                        response.set_cookie(key="password", value=chair.password, max_age=max_age, expires=expires)
-                        response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
-
-                    elif user_type == "reviewer":
-                        reviewer = models.Reviewer.objects.get(email=email, password=hashed_password)
-                        response.set_cookie(key="password", value=reviewer.password, max_age=max_age, expires=expires)
-                        response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
-                    elif user_type == "author":
-                        author = models.Author.objects.get(email=email, password=hashed_password)
-                        response.set_cookie(key="password", value=author.password, max_age=max_age, expires=expires)
-                        response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
+                    response.set_cookie(key="password", value=hashed_password, max_age=max_age, expires=expires) 
+                    response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
+                    
                     return response
                 except Exception as e:
                     return HttpResponse("Unexpected error. Exception : ",e)
             except Exception as e:
                 # Non existing user
                 print(e)
-                return render(request,"login.html",{"islogged_in":True,'message':'Bad Authentication.',"is_admin_logged_in":is_admin_logged_in
-                                                    ,"user_type":request.COOKIES.get('user_type')})
+                return render(request,"login.html",{"islogged_in":False, 'message':'Bad Authentication.', "is_admin_logged_in":False
+                                                    , "user_type":request.COOKIES.get('user_type')})
 
 
 def logout_handle(request):
-    islogged_in = check_login(request)
-    is_admin_logged_in = check_admin_login(request)
-    response = render(request, "index.html", {"islogged_in": False,"is_admin_logged_in":False})
+    response = render(request, "login.html", {"islogged_in": False,"is_admin_logged_in":False})
     response.delete_cookie('user_type')
     response.delete_cookie('email')
     response.delete_cookie('password')
@@ -299,6 +299,30 @@ def schedule_conference(request):
                        "end_date": conference.end_date,
                        "is_admin_logged_in": is_admin_logged_in})
 
+def user_type_homepage(request):
+    template_name = ""
+    
+    if request.COOKIES.get('user_type'):
+        #not logged in
+        template_name = "login.html"
+        
+    elif request.COOKIES.get('user_type') == hash_string('0'):
+        #0 = system admin
+        template_name = "admin_homepage.html"
+        
+    elif request.COOKIES.get('user_type') == hash_string('1'):
+        #1 = conference chair
+        template_name = "conference_chair_homepage.html"
+        
+    elif request.COOKIES.get('user_type') == hash_string('2'):
+        #2 = reviewer
+        template_name = "reviewer_homepage.html"
+        
+    elif request.COOKIES.get('user_type') == hash_string('3'):
+        #3 = author
+        template_name = "author_homepage.html"
+        
+    return render(request, template_name)
 
 
 def schedule_paper_handle(request):
