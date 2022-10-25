@@ -4,6 +4,7 @@ pip install django
 2. To run without problems install requirements
 
 pip install -r requirements.txt
+pip install django-polymorphic
 
 3. To view website and changes
 
