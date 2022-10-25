@@ -1,18 +1,21 @@
 from django.urls import path
+
+from Conference_Management_System_Django.main.controller import loginout_controller
 from . import views
+from .controller import *
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', loginout_controller.index, name='index'),
     path('sign_up', views.sign_up, name='sign_up'),
     path('sign_up_handle', views.sign_up_handle, name='sign_up_handle'),
-    path('login', views.login, name='login'),
-    path('login_handle', views.login_handle, name='login_handle'),
+    path('login', loginout_controller.login, name='login'),
+    path('login_handle', loginout_controller.login_handle, name='login_handle'),
     path('conferences',views.conferences, name="conferences"),
     path('add_conference_handle',views.add_conference_handle, name="add_conference_handle"),
     path('conference',views.conference,name='conference'),
     path('add_paper_handle',views.add_paper_handle,name='add_paper_handle'),
-    path('logout',views.logout_handle,name='logou_handle'),
+    path('logout',loginout_controller.logout_handle,name='logou_handle'),
     path('accept_reject_chair_reviewer_handle',views.accept_reject_chair_reviewer_handle,name='accept_reject_chair_reviewer_handle'),
     path('chair_reviewer_application',views.chair_reviewer_application,name='chair_reviewer_application'),
     path('author_papers',views.author_papers,name="author_papers"),
