@@ -52,34 +52,36 @@ def login_handle(request):
             user = models.User.objects.get(login_email=email,login_pw=hashed_password)
             user_type = user.user_type
             try:
-                if user_type == constants.USERTYPE_SYSTEMADMIN:
+                if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
                     #0 = system admin
                     template_name = "admin_homepage.html"
                     
-                elif user_type == constants.USERTYPE_CONFERENCECHAIR:
+                elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
                     #1 = conference chair
                     template_name = "conference_chair_homepage.html"
                     
-                elif user_type == constants.USERTYPE_REVIEWER:
+                elif user_type == models.User.UserType.USERTYPE_REVIEWER:
                     #2 = reviewer
                     template_name = "reviewer_homepage.html"
                     
-                elif user_type == constants.USERTYPE_AUTHOR:
+                elif user_type == models.User.UserType.USERTYPE_AUTHOR:
                     #3 = author
                     template_name = "author_homepage.html"
                     
                 hashed_user_type = controller_util.hash_string(str(user_type))
-                context = {"islogged_in":True,"user_type":controller_util.hash_string(user_type), 'message':"Logged in as "+user.name}
+                context = {"islogged_in":True,"user_type":controller_util.hash_string(str(user_type)), 'message':"Logged in as "+user.name}
                 #response = render(request, template_name, context)
                 response = render(request, "index.html", context)
                 expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
                                                         "%a, %d-%b-%Y %H:%M:%S GMT")
+                                                        
                 response.set_cookie(key="email", value=email, max_age=max_age, expires=expires)
                 response.set_cookie(key="password", value=hashed_password, max_age=max_age, expires=expires) 
                 response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
                 
                 return response
             except Exception as e:
+                print(e)
                 return HttpResponse("Unexpected error. Exception : ",e)
         except Exception as e:
             # Non existing user
