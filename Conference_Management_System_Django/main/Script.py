@@ -1,51 +1,34 @@
 from multiprocessing import connection
 import sqlite3
+import hashlib
 
 from sqlite3 import Error
+connection =''
+cursorObj = ''
 
 def sql_connection():
     try:
         # define connection(to connect to a database) and cursor(to interact with a database), the thing specified in brackets is the database name
-        connection = sqlite3.connect('db.db')
+        connection = sqlite3.connect('db.sqlite3')
+        return connection
 
     except Error:
         print(Error)
 
 def sql_table(connection):
         cursorObj = connection.cursor()
+        return cursorObj
+def hash_string(string):
+    return hashlib.sha224(string.encode('utf-8')).hexdigest()
+#add to main_user
+#0 - system admin
+#1 - conference chair
+#2 - reviewer
+#3 - author
+connection = sql_connection()
+cursorObj = sql_table(connection)
+cursorObj.execute("INSERT INTO main_user VALUES (001, 'ashleylogan19@gmail.com',"+ hash_string('19ash204yolo') + ", 'Ashley Logan',false, 0, 0)")
+cursorObj.execute("INSERT INTO main_user VALUES (002, 'jenniferhaul33@gmail.com', "+ hash_string('jen2haul005') + ", 'Jennifer Haul', false, 0, 0)")
+cursorObj.execute("INSERT INTO main_user VALUES (003, 'pranovsidhvik@gmail.com',"+ hash_string('sid@pranic292') + ", 'Pranov Sidhvik', false, 0, 0)")
+cursorObj.execute("INSERT INTO main_user VALUES (004, 'chanyouman3teng@gmail.com',"+ hash_string('chan82$nasafol') + ", 'Chan You Man Teng', false, 0, 0)")
 
-        # create user table
-        command1 = """CREATE TABLE IF NOT EXISTS
-User(user_id INTEGER PRIMARY KEY, login_email TEXT, login_pw TEXT, name TEXT, user_type TEXT)"""
-
-cursor.execute(command1)
-
-# create purchases table
-
-command2 = """CREATE TABLE IF NOT EXISTS
-Paper( paper_id INTEGER PRIMARY KEY, array_authors_id INTEGER, paper_name TEXT, paper_details TEXT, array_reviewer_ids INTEGER, reviewer_bid REAL, acceptance_state INTEGER,FOREIGN KEY(array_reviewer_ids) REFERENCES User(user_id), FOREIGN KEY(array_authors_id) REFERENCES User(user_id))"""
-
-cursor.execute(command2)
-
-# create review table
-
-command3 = """CREATE TABLE IF NOT EXISTS
-Review(review_id INTEGER, paper_id INTEGER, reviewer_id INTEGER, review_details TEXT, reviewer_rating INTEGER, author_rating INTEGER, array_comments TEXT, FOREIGN KEY(paper_id) REFERENCES Paper(Paper_id), FOREIGN KEY(reviewer_id) REFERENCES User(user_id))"""
-
-cursor.execute(command3)
-
-# create reviewer table
-
-command4 = """CREATE TABLE IF NOT EXISTS
-Reviewer(user_id INTEGER, max_papers INTEGER, FOREIGN KEY(user_id) REFERENCES User(user_id))"""
-
-cursor.execute(command4)
-
-#add to User
-
-cursor.execute("INSERT INTO User VALUES (001, 'ashleylogan19@gmail.com', '19ash204yolo', 'Ashley Logan', 'Author')")
-cursor.execute("INSERT INTO User VALUES (002, 'jenniferhaul33@gmail.com', 'jen2haul005', 'Jennifer Haul', 'Conference Chair')")
-cursor.execute("INSERT INTO User VALUES (003, 'pranovsidhvik@gmail.com', 'sid@pranic292', 'Pranov Sidhvik', 'Reviewer')")
-cursor.execute("INSERT INTO User VALUES (004, 'chanyouman3teng@gmail.com', 'chan82$nasafol', 'Chan You Man Teng', 'System Admin')")
-
-#add to Paper
