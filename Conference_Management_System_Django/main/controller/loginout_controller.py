@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse,Http404
-from Conference_Management_System_Django.main.controller import controller_util
+from main.controller import controller_util
 from main import models
 import hashlib
 from main import Utils

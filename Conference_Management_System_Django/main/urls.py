@@ -1,8 +1,8 @@
 from django.urls import path
 
-from Conference_Management_System_Django.main.controller import loginout_controller
+from .controller import loginout_controller
 from . import views
-from .controller import *
+#from .controller import *
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [

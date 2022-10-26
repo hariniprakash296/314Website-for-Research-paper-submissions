@@ -24,7 +24,7 @@ def check_login(request):
     else:
         return False
 def check_admin_login(request):
-    if request.COOKIES.get('user_type') == hash_string(constants.USERTYPE_SYSTEMADMIN):
+    if request.COOKIES.get('user_type') == hash_string(str(models.User.UserType.USERTYPE_SYSTEMADMIN)):
         return True
     else:
         return False
