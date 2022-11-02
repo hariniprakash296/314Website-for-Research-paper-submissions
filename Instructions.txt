@@ -16,3 +16,7 @@ python manage.py runserver
 generate sql code to create tables based on model.py
 python manage.py makemigrations main
 python manage.py sqlmigrate polls [integer]
+
+test admin
+ioaisdjoias@asd.od
+password

@@ -1,16 +1,16 @@
 from django.urls import path
 
-from .controller import loginout_controller
+from .controller import loginout_controller, sysadmin_controller
 from . import views
 #from .controller import *
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('', loginout_controller.index, name='index'),
-    path('sign_up', views.sign_up, name='sign_up'),
-    path('sign_up_handle', views.sign_up_handle, name='sign_up_handle'),
+    path('sign_up', sysadmin_controller.admin_create_user, name='sign_up'),
+    path('sign_up_handle', sysadmin_controller.admin_AddUserProfile, name='sign_up_handle'),
     path('login', loginout_controller.login, name='login'),
-    path('login_handle', loginout_controller.login_handle, name='login_handle'),
+    path('login_handle', loginout_controller.login_ValidateInfo, name='login_handle'),
     path('conferences',views.conferences, name="conferences"),
     path('add_conference_handle',views.add_conference_handle, name="add_conference_handle"),
     path('conference',views.conference,name='conference'),

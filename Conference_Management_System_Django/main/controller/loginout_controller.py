@@ -39,7 +39,7 @@ def login(request):
     is_admin_logged_in = controller_util.check_admin_login(request)
     return render(request,"login.html",{"islogged_in":islogged_in,'message':"","is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
 
-def login_handle(request):
+def login_ValidateInfo(request):
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -90,7 +90,7 @@ def login_handle(request):
                                                 , "user_type":request.COOKIES.get('user_type')})
 													
 def logout_handle(request):
-    response = render(request, "login.html", {"islogged_in": False,"is_admin_logged_in":False})
+    response = render(request, "login.html", {"islogged_in": False,"is_admin_logged_in":False, 'message':'Logged out successfully.'})
     response.delete_cookie('user_type')
     response.delete_cookie('email')
     response.delete_cookie('password')
