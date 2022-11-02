@@ -110,23 +110,7 @@ def admin_AddUserProfile(request):
         # return response
         """
 
-def admin_SearchUser(request):
-    islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
-
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
-
-    if request.method == "POST":
-        if request.POST.get('name'):
-            searched_name = request.POST.get('name')
-            users = models.User.objects.filter(Q(name__contains=searched_name))
-        else:
-            users = models.User.objects.all()
-
-        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
-
-def admin_view_users(request):
+def admin_ViewAllUsers(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = controller_util.check_admin_login(request)
 
@@ -152,10 +136,62 @@ def admin_view_users(request):
             elif user_type == models.User.UserType.USERTYPE_AUTHOR:
                 #3 = author
                 users = models.Author.objects.all()
+            else:
+                users = models.User.objects.all()
+        else:
+            users = models.User.objects.all()
+    else:
+        users = models.User.objects.all()
+
+    return render(request, "admin_listuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+
+def admin_SearchUser(request):
+    islogged_in = controller_util.check_login(request)
+    is_admin_logged_in = controller_util.check_admin_login(request)
+
+    if not islogged_in or not is_admin_logged_in:
+        admin_error_handle(request)
+
+    if request.method == "POST":
+        if request.POST.get('name'):
+            searched_name = request.POST.get('name')
+            users = models.User.objects.filter(Q(name__contains=searched_name))
         else:
             users = models.User.objects.all()
 
-        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+        return render(request, "admin_listuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+
+def admin_ViewUser(request):
+    islogged_in = controller_util.check_login(request)
+    is_admin_logged_in = controller_util.check_admin_login(request)
+
+    if not islogged_in or not is_admin_logged_in:
+        admin_error_handle(request)
+
+    if request.method == "POST":
+        # TODO add form checks here or in html as javascript
+        user_id = request.POST.get('user_id')
+        
+        user = models.User.objects.get(user_id=user_id)
+        user_type = user.user_type
+
+        if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
+            #0 = system admin
+            user = models.SystemAdmin.objects.get(user_id=user_id)
+            
+        elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
+            #1 = conference chair
+            user = models.ConferenceChair.objects.get(user_id=user_id)
+            
+        elif user_type == models.User.UserType.USERTYPE_REVIEWER:
+            #2 = reviewer
+            user = models.Reviewer.objects.get(user_id=user_id)
+            
+        elif user_type == models.User.UserType.USERTYPE_AUTHOR:
+            #3 = author
+            user = models.Author.objects.get(user_id=user_id)
+
+        return render(request, "admin_viewuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
 
 def admin_UpdateUser(request):
     islogged_in = controller_util.check_login(request)
@@ -202,8 +238,11 @@ def admin_SuspendUser(request):
         
         user = models.User.objects.get(user_id=user_id)
 
+        user.is_suspended = True
+        user.save()
 
-        
+        return admin_ViewUser(request)
+
         return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
 
 

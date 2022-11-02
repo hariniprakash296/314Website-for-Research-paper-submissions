@@ -50,8 +50,9 @@ def login_ValidateInfo(request):
         max_age = 60 * 30
         try:
             user = models.User.objects.get(login_email=email,login_pw=hashed_password)
-            user_type = user.user_type
             try:
+                user_type = user.user_type
+                
                 if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
                     #0 = system admin
                     template_name = "admin_homepage.html"
@@ -69,9 +70,10 @@ def login_ValidateInfo(request):
                     template_name = "author_homepage.html"
                     
                 hashed_user_type = controller_util.hash_string(str(user_type))
-                context = {"islogged_in":True,"user_type":controller_util.hash_string(str(user_type)), 'message':"Logged in as "+user.name}
-                #response = render(request, template_name, context)
-                response = render(request, "index.html", context)
+                context = {"islogged_in":True, "is_admin_logged_in":user_type == models.User.UserType.USERTYPE_SYSTEMADMIN, "user_type":controller_util.hash_string(str(user_type)), 'message':"Logged in as "+user.name}
+                response = render(request, template_name, context)
+                #response = render(request, "index.html", context)
+
                 expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
                                                         "%a, %d-%b-%Y %H:%M:%S GMT")
                                                         
