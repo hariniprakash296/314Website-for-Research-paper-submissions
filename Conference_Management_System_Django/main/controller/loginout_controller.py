@@ -32,7 +32,29 @@ def create_login_cookies(response,email,hashed_password,non_hashed_user_type):
 def index(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = controller_util.check_admin_login(request)
-    return render(request,"index.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
+
+    user_type = request.COOKIES.get('user_type')
+    if user_type:
+        if user_type == controller_util.hash_string(str(models.User.UserType.USERTYPE_SYSTEMADMIN)):
+            #0 = system admin
+            template_name = "admin_homepage.html"
+            
+        elif user_type == controller_util.hash_string(str(models.User.UserType.USERTYPE_CONFERENCECHAIR)):
+            #1 = conference chair
+            template_name = "conference_chair_homepage.html"
+            
+        elif user_type == controller_util.hash_string(str(models.User.UserType.USERTYPE_REVIEWER)):
+            #2 = reviewer
+            template_name = "reviewer_homepage.html"
+            
+        elif user_type == controller_util.hash_string(str(models.User.UserType.USERTYPE_AUTHOR)):
+            #3 = author
+            template_name = "author_homepage.html"
+    else:
+        template_name = "index.html"
+
+    print("Using template: "+template_name)
+    return render(request,template_name,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
 	
 def login(request):
     islogged_in = controller_util.check_login(request)
@@ -52,7 +74,7 @@ def login_ValidateInfo(request):
             user = models.User.objects.get(login_email=email,login_pw=hashed_password)
             try:
                 user_type = user.user_type
-                
+
                 if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
                     #0 = system admin
                     template_name = "admin_homepage.html"

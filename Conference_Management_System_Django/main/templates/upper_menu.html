@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="background" style="height:100%">
 <head>
     <meta charset="UTF-8">
     <title>Homepage group 7 musketeers</title>
-    {% block head %}
-    {% endblock %}
     {% load static %}
     <link rel="stylesheet" href="{% static '/css/style_upper_menu.css' %}">
     <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+    {% block head %}
+    {% endblock %}
 </head>
 
 <div class="pagename">
@@ -19,32 +19,13 @@
         <div id="buttons">
         <a style="color: aliceblue; font-family: 'Brush Script-MT';" href="/">Home</a>
         </div>
-        <div id="buttons">
-        <a style="color: aliceblue;" href="conferences">Conference Chair</a>
-        </div>
-        <div id="buttons">
         {% if islogged_in == False %}
-        <a style="color: aliceblue; " href="login">Log in</a>
-        {% endif %}
+        <div id="buttons">
+            <a style="color: aliceblue; " href="login">Log in</a>
         </div>
-
-        {% if islogged_in == True %}
+        {% else %}
         <a href="logout">Log out</a>
         {% endif %}
-        {% if is_admin_logged_in %}
-            <a href="chair_reviewer_application">Applications</a>
-            {%  elif user_type == "ba78a4b507e20f7d159503078770b0b1e3865e8ab6a9a85ab49a5486" %}
-            <a href="author_papers">Your papers</a>
-            {%  elif user_type == "4f0373fb264a3a25bc997596ab16e6de0dbfca018ebefca11e9f1492" %}
-            <a href="reviewer_assignments">Your review assignments</a>
-            {% else %}
-            <div id="buttons">
-            <a href="sign_up" {% if islogged_in == True %}
-            style="visibility: hidden;"
-        {% endif %}
-        style="color: aliceblue;">Authors</a>
-            </div>
-        {% endif %} 
         </div>
 </div>
 {% block content %}

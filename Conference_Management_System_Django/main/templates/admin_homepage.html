@@ -1,9 +1,12 @@
-<div class="background">
-    {%extends "upper_menu.html" %}
-    {% block head %}
-        {% load static %}
-        <link rel="stylesheet" href="{% static '/css/style_signup_login_form.css' %}">
-        <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
-    {% endblock %}
-    
-</div>
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+{{ message }}
+<div class="user_button_group">
+    <div id="user_buttons"> <a href="admin_create_user" style="color: aliceblue;">Add New User</a> </div>
+    <div id="user_buttons" > <a href="view_all_users" style="color: aliceblue;">View All Users</a> </div>
+</div>  
+{% endblock content %}

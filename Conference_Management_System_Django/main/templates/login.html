@@ -3,14 +3,13 @@
 {% block head %}
     {% load static %}
     <link rel="stylesheet" href="{% static '/css/style_signup_login_form.css' %}">
-    <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 {% endblock %}
 
 {% block content %}
     {{ message }}
     <div class="divFormContainer">
         <div class="divLoginSignup">
-            <form action="login_handle" method="post">
+            <form action="login_ValidateInfo" method="post">
             {% csrf_token %}
                 <a style="align-content: left;">Username:</a>
                 <input type="text" placeholder="Please enter your email" name="email">

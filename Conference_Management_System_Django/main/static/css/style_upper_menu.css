@@ -37,6 +37,7 @@
     text-decoration: red;
     padding: 10px;
     margin-top: 3px;
+    height: 30px;
     font-family: 'Brush Script-MT';
     margin-right: 3px;
     border-color: blue;
@@ -53,10 +54,4 @@
     color: aliceblue;
     background-position: right bottom, left top;
     background-repeat: no-repeat, repeat; background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
-}
-
-#pagename {
-    padding: 20px;
-    font-size: 20px;
-    background-color: aqua;
 }
