@@ -124,7 +124,7 @@ def admin_SearchUser(request):
         else:
             users = models.User.objects.all()
 
-        return render(request, ,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
 
 def admin_view_users(request):
     islogged_in = controller_util.check_login(request)
@@ -155,7 +155,7 @@ def admin_view_users(request):
         else:
             users = models.User.objects.all()
 
-        return render(request, ,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
 
 def admin_UpdateUser(request):
     islogged_in = controller_util.check_login(request)
@@ -187,7 +187,23 @@ def admin_UpdateUser(request):
             #3 = author
             user = models.Author.objects.get(user_id=user_id)
 
-        return render(request, ,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
+        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
 
 def admin_SuspendUser(request):
+    islogged_in = controller_util.check_login(request)
+    is_admin_logged_in = controller_util.check_admin_login(request)
+
+    if not islogged_in or not is_admin_logged_in:
+        admin_error_handle(request)
+
+    if request.method == "POST":
+        # TODO add form checks here or in html as javascript
+        user_id = request.POST.get('user_id')
+        
+        user = models.User.objects.get(user_id=user_id)
+
+
+        
+        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
+
 
