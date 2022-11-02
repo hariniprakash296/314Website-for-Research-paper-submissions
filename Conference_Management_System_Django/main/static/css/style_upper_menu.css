@@ -1,8 +1,4 @@
-#pagename {
-    padding: 20px;
-    font-size: 20px;
-    background-color: aqua;
-}
+
 
 #divMenuContainer{
     display:flex;
@@ -12,6 +8,7 @@
     margin-right: auto;
     margin-left: auto;
 }
+
 #divMenuContainer > a {
     padding: 10px;
     font-size: 20px;
@@ -56,4 +53,10 @@
     color: aliceblue;
     background-position: right bottom, left top;
     background-repeat: no-repeat, repeat; background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
+}
+
+#pagename {
+    padding: 20px;
+    font-size: 20px;
+    background-color: aqua;
 }
