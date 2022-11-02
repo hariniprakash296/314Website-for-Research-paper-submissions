@@ -35,3 +35,25 @@
 
     width : 25%;
 }
+
+#buttons {
+    text-decoration: red;
+    padding: 10px;
+    margin-top: 3px;
+    font-family: 'Brush Script-MT';
+    margin-right: 3px;
+    border-color: blue;
+    color: aliceblue;
+    background-position: right bottom, left top; 
+    background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
+    border-radius: 10px;
+    display:inline-block;
+}
+
+.pagename {
+    padding: 2px;
+    font-size: 15px;
+    color: aliceblue;
+    background-position: right bottom, left top;
+    background-repeat: no-repeat, repeat; background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
+}
