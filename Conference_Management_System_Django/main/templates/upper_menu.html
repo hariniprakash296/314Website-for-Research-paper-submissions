@@ -7,9 +7,29 @@
     {% endblock %}
     {% load static %}
     <link rel="stylesheet" href="{% static '/css/style_upper_menu.css' %}">
-    <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 </head>
-
+<style>
+    .pagename {
+    padding: 2px;
+    font-size: 15px;
+    color: aliceblue;
+    background-position: right bottom, left top;
+    background-repeat: no-repeat, repeat; background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
+}
+    #buttons {
+    text-decoration: red;
+    padding: 10px;
+    margin-top: 3px;
+    font-family: 'Brush Script-MT';
+    margin-right: 3px;
+    border-color: blue;
+    color: aliceblue;
+    background-position: right bottom, left top; 
+    background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
+    border-radius: 10px;
+    display:inline-block;
+}
+</style>
 <div class="pagename">
     <h1>Research Conference Management System</h1>
 </div>
@@ -17,15 +37,26 @@
 <center><body style="padding: 10px; margin: 2px;">
     <div id="divMenuContainer">
         <div id="buttons">
-            <a href="/">Home</a>
-            {% if islogged_in == False %}
-            <a href="login">Log in</a>
-            {% endif %}
+        <a style="color: aliceblue; font-family: 'Brush Script-MT';" href="/">Home</a>
+        </div>
+        <div id="buttons">
+        {% if islogged_in == False %}
+        <a style="color: aliceblue; " href="login">Log in</a>
+        {% endif %}
         </div>
 
         {% if islogged_in == True %}
-        <a href="logout">Log out</a>
+        <a style="color: aliceblue;" href="logout">Log out</a>
         {% endif %}
+        {% if is_admin_logged_in %}
+            <a href="chair_reviewer_application">Applications</a>
+            {%  elif user_type == "ba78a4b507e20f7d159503078770b0b1e3865e8ab6a9a85ab49a5486" %}
+            <a href="author_papers">Your papers</a>
+            {%  elif user_type == "4f0373fb264a3a25bc997596ab16e6de0dbfca018ebefca11e9f1492" %}
+            <a href="reviewer_assignments">Your review assignments</a>
+            {% else %}
+        {% endif %} 
+        </div>
 </div>
 {% block content %}
 {% endblock %}
