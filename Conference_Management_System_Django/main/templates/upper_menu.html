@@ -40,9 +40,6 @@
         <a style="color: aliceblue; font-family: 'Brush Script-MT';" href="/">Home</a>
         </div>
         <div id="buttons">
-        <a style="color: aliceblue;" href="conferences">Conference Chair</a>
-        </div>
-        <div id="buttons">
         {% if islogged_in == False %}
         <a style="color: aliceblue; " href="login">Log in</a>
         {% endif %}
@@ -58,12 +55,6 @@
             {%  elif user_type == "4f0373fb264a3a25bc997596ab16e6de0dbfca018ebefca11e9f1492" %}
             <a href="reviewer_assignments">Your review assignments</a>
             {% else %}
-            <div id="buttons">
-            <a href="sign_up" {% if islogged_in == True %}
-            style="visibility: hidden;"
-        {% endif %}
-        style="color: aliceblue;">Authors</a>
-            </div>
         {% endif %} 
         </div>
 </div>
