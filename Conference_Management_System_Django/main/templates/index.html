@@ -1,8 +1,11 @@
-{%extends "upper_menu.html" %}
-{% load static %}
-<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 <div class="background">
+    {%extends "upper_menu.html" %}
+    {% block head %}
+        {% load static %}
+        <link rel="stylesheet" href="{% static '/css/style_signup_login_form.css' %}">
+        <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+    {% endblock %}
 {% block content %}
-    <h2 style="text-align: center;">Please choose your role </h2>
+    <h2 style="text-align: center; font-family: Brush Script-MT; font-style: italic; font-size: 200%;">Welcome to the 7 Musketeers Research Paper Submission Home Page!</h2>
 {% endblock %}
 </div>
