@@ -119,3 +119,14 @@ def logout_handle(request):
     response.delete_cookie('email')
     response.delete_cookie('password')
     return response
+
+def emergency_manual_method(request):
+    # call via "http://127.0.0.1:8000/emergency_manual_method?user_id="
+    if request.method == "GET":
+        try:
+            user_id = request.GET.get('user_id')
+            user = models.User.objects.get(user_id=user_id)
+            user.delete()
+        except Exception as e:
+            print(e)
+        return index(request)

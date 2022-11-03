@@ -17,6 +17,10 @@ generate sql code to create tables based on model.py
 python manage.py makemigrations main
 python manage.py sqlmigrate polls [integer]
 
-test admin
-ioaisdjoias@asd.od
-password
+test admin accounts
+email:  ioaisdjoias@asd.od
+pw:     password
+
+test author accounts
+email:  someauthor@gmail.com
+pw:     password

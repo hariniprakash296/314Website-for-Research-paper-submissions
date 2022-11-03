@@ -17,6 +17,7 @@ urlpatterns = [
     path('view_user', sysadmin_controller.admin_ViewUser, name='view_user'),
     path('update_user', sysadmin_controller.admin_UpdateUser, name='update_user'),
     path('suspend_user', sysadmin_controller.admin_SuspendUser, name='suspend_user'),
+    path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
 
     path('conferences',views.conferences, name="conferences"),
     path('add_conference_handle',views.add_conference_handle, name="add_conference_handle"),

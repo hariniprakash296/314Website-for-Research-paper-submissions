@@ -1,8 +1,53 @@
 {%extends "upper_menu.html" %}
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 <div class="background">
 {% block content %}
-    <h2 style="text-align: center;">Please choose your role </h2>
+<div>
+    <table cellspacing="10">
+        <tr>
+            <th>
+                User Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                User Type
+            </th>
+            <th>
+                Is Suspended
+            </th>
+
+        </tr>
+        {% for user in users%}
+                <tr>
+                    <form action="view_user" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value = {{user.user_id}}>
+                        <td>
+                            {{ user.name }}
+                        </td>
+                        <td>
+                            {{ user.login_email }}
+                        </td>
+                        <td>
+                            {{ usertype_dict|access_dict:user.user_type }}
+                        </td>
+                        {% comment %} <td>
+                            <a href="view_user?conf_name={{ conf_name }}&paper_id={{ unscheduled_paper.id }}">Schedule Paper</a>
+                        </td> {% endcomment %}
+                        <td>
+                            <input type="checkbox" {% if user.is_suspended %} checked {% endif %}disabled>
+                        </td>
+                        <td>
+                            <input type="submit" value="View user">
+                        </td>
+                    </form>
+                </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
 </div>

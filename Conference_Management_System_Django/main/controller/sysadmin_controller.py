@@ -44,30 +44,45 @@ def admin_AddUserProfile(request):
     if request.method == "POST":
         # TODO add form checks here or in html as javascript
         user_type = request.POST.get('user_type')
-        email = request.POST.get('email')
-        name = request.POST.get('name')
+        email = request.POST.get('email').strip()
         password = request.POST.get('password').encode('utf-8')
+        name = request.POST.get('name').strip()
+
+        context = {"islogged_in": islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
+        
+        if user_type == None or len(email) == 0 or len(password) == 0 or len(name) == 0:
+            context["message"] = "Please fill all fields."
+            return render(request, "sign_up.html", context)
+
+
         hashed_password = hashlib.sha224(password).hexdigest()
-        context = {"islogged_in": False,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
+        try:
+            user = models.User.objects.get(login_email=email)
+            context["message"] = "Account with the specified email already exists."
 
-        if user_type == "admin":
-            #0 = system admin
-            models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, type=models.User.UserType.USERTYPE_SYSTEMADMIN)
-            
-        elif user_type == "chair":
-            #1 = conference chair
-            models.ConferenceChair.objects.create(login_email=email, login_pw=hashed_password, name=name, type=models.User.UserType.USERTYPE_CONFERENCECHAIR)
-            
-        elif user_type == "reviewer":
-            #2 = reviewer
-            max_papers = int(request.POST.get('max_papers'))
-            models.Reviewer.objects.create(login_email=email, login_pw=hashed_password, name=name, max_papers=max_papers, type=models.User.UserType.USERTYPE_REVIEWER)
-            
-        elif user_type == "author":
-            #3 = author
-            models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, type=models.User.UserType.USERTYPE_AUTHOR)
+        except models.User.DoesNotExist as e:
+            print(e)
+            context["message"] = "User successfully created."
 
-        return render(request, "sign_up_handle.html", context)
+            if user_type == "admin":
+                #0 = system admin
+                models.SystemAdmin.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_SYSTEMADMIN)
+                
+            elif user_type == "chair":
+                #1 = conference chair
+                models.ConferenceChair.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_CONFERENCECHAIR)
+                
+            elif user_type == "reviewer":
+                #2 = reviewer
+                max_papers = int(request.POST.get('max_papers'))
+                models.Reviewer.objects.create(login_email=email, login_pw=hashed_password, name=name, max_papers=max_papers, user_type=models.User.UserType.USERTYPE_REVIEWER)
+                
+            elif user_type == "author":
+                #3 = author
+                models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_AUTHOR)
+
+            
+        return render(request, "sign_up.html", context)
 
         """
         # if user_type == "author":
@@ -140,7 +155,12 @@ def admin_ViewAllUsers(request):
         else:
             users = models.User.objects.all()
 
-    return render(request, "admin_listuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
+    usertype_dict = dict()
+    for key, value in models.User.UserType.choices:
+        usertype_dict[key] = value
+
+    return render(request, "admin_listuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), 
+        "users":users, "usertype_dict":usertype_dict})
 
 def admin_SearchUsers(request):
     islogged_in = controller_util.check_login(request)
@@ -158,7 +178,7 @@ def admin_SearchUsers(request):
 
         return render(request, "admin_listuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "users":users})
 
-def admin_ViewUser(request):
+def admin_ViewUser(request, message=None):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = controller_util.check_admin_login(request)
 
@@ -169,26 +189,38 @@ def admin_ViewUser(request):
         # TODO add form checks here or in html as javascript
         user_id = request.POST.get('user_id')
         
-        user = models.User.objects.get(user_id=user_id)
-        user_type = user.user_type
+        template = "admin_viewuser.html"
+        context = {"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
+        try:
+            user = models.User.objects.get(user_id=user_id)
+            user_type = user.user_type
 
-        if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
-            #0 = system admin
-            user = models.SystemAdmin.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
-            #1 = conference chair
-            user = models.ConferenceChair.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_REVIEWER:
-            #2 = reviewer
-            user = models.Reviewer.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_AUTHOR:
-            #3 = author
-            user = models.Author.objects.get(user_id=user_id)
+            if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
+                #0 = system admin
+                user = models.SystemAdmin.objects.get(user_id=user_id)
+                
+            elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
+                #1 = conference chair
+                user = models.ConferenceChair.objects.get(user_id=user_id)
+                
+            elif user_type == models.User.UserType.USERTYPE_REVIEWER:
+                #2 = reviewer
+                user = models.Reviewer.objects.get(user_id=user_id)
+                
+            elif user_type == models.User.UserType.USERTYPE_AUTHOR:
+                #3 = author
+                user = models.Author.objects.get(user_id=user_id)
 
-        return render(request, "admin_viewuser.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
+            context["selected_user"] = user
+
+        except models.User.DoesNotExist as e:
+            template = "admin_listuser.html"
+            context["message"] = "Failed to retrieve user."
+
+        if message != None and not "message" in context:
+            context["message"] = message
+
+        return render(request, template, context)
 
 def admin_UpdateUser(request):
     islogged_in = controller_util.check_login(request)
@@ -220,7 +252,34 @@ def admin_UpdateUser(request):
             #3 = author
             user = models.Author.objects.get(user_id=user_id)
 
-        return admin_ViewUser(request)
+        new_user_type = None
+        new_user_type_str = request.POST.get('new_user_type')
+        if new_user_type_str == "admin":
+            #0 = system admin
+            new_user_type = models.User.UserType.USERTYPE_SYSTEMADMIN
+            
+        elif new_user_type_str == "chair":
+            #1 = conference chair
+            new_user_type = models.User.UserType.USERTYPE_CONFERENCECHAIR
+            
+        elif new_user_type_str == "reviewer":
+            #2 = reviewer
+            new_user_type = models.User.UserType.USERTYPE_REVIEWER
+            
+        elif new_user_type_str == "author":
+            new_user_type = models.User.UserType.USERTYPE_AUTHOR
+            
+        user.login_email = request.POST.get('new_email')
+        user.name = request.POST.get('new_name')
+        user.user_type = new_user_type
+        
+        password = request.POST.get('new_password').strip()
+        if password != None and password != "":
+            hashed_password = hashlib.sha224(password.encode('utf-8')).hexdigest()
+            user.login_pw = hashed_password
+        user.save()
+
+        return admin_ViewUser(request, "User successfully edited.")
 
 def admin_SuspendUser(request):
     islogged_in = controller_util.check_login(request)
@@ -235,11 +294,12 @@ def admin_SuspendUser(request):
         
         user = models.User.objects.get(user_id=user_id)
 
-        user.is_suspended = True
+        user.is_suspended = not user.is_suspended
         user.save()
 
-        return admin_ViewUser(request)
+        un_str = "un"
+        if user.is_suspended:
+            un_str = ""
 
-        return render(request, "",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type'), "selected_user":user})
-
+        return admin_ViewUser(request, "User successfully "+un_str+"suspended.")
 

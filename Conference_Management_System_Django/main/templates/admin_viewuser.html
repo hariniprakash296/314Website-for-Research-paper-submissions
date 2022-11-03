@@ -3,6 +3,34 @@
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 <div class="background">
 {% block content %}
-    <h2 style="text-align: center;">Please choose your role </h2>
+<div class="divFormContainer">
+    <div class="divLoginSignup">
+        <form action="update_user" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value = {{selected_user.user_id}}>
+            <input type="text" placeholder="e-mail" name="new_email" value={{selected_user.login_email}}>
+            <br>
+            <input type="password" placeholder="password" name="new_password" value="">
+            <br>
+            <input type="text" placeholder="your name" name="new_name" value={{selected_user.name}}>
+            <br>
+            <input type="radio" name="new_user_type" value="admin" {% if selected_user.user_type == 0 %} checked {% endif %}>System Admin
+            <br>
+            <input type="radio" name="new_user_type" value="chair" {% if selected_user.user_type == 1 %} checked {% endif %}>Chair
+            <br>
+            <input type="radio" name="new_user_type" value="reviewer" {% if selected_user.user_type == 2 %} checked {% endif %}>Reviewer
+            <br>
+            <input type="radio" name="new_user_type" value="author" {% if selected_user.user_type == 3 %} checked {% endif %}>Author
+            <br>
+            <input type="submit" value="Edit User">
+        </form>
+        <form action="suspend_user" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value = {{selected_user.user_id}}>
+            <br>
+            <input type="submit" value={% if selected_user.is_suspended %} "Unsuspend User" {% else %} "Suspend User" {% endif %}>
+        </form>
+    </div>
+</div>
 {% endblock %}
 </div>
