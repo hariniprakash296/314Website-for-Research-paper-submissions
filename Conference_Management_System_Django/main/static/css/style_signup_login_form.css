@@ -31,7 +31,7 @@
 }
 
 .divLoginSignup input[type=submit]:hover {
-  background-color: #45a049;
+  background-color: lightblue;
 }
 .divFormContainer{
   display:flex;
