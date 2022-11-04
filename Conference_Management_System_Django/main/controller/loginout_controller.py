@@ -31,7 +31,7 @@ def create_login_cookies(response,email,hashed_password,non_hashed_user_type):
 #view funcs	
 def index(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = controller_util.check_type_login(request, models.User.UserType.USERTYPE_SYSTEMADMIN)
 
     user_type = request.COOKIES.get('user_type')
     if user_type:
@@ -57,8 +57,8 @@ def index(request):
     return render(request,template_name,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
 	
 def login(request):
-    islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    islogged_in = False
+    is_admin_logged_in = False
     return render(request,"login.html",{"islogged_in":islogged_in,'message':"","is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
 
 def login_ValidateInfo(request):

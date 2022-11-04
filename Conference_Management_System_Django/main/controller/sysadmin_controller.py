@@ -26,10 +26,12 @@ def admin_error_handle(request):
     response.delete_cookie('password')
     return response
 
+def check_admin_login(request):
+    return controller_util.check_type_login(request, models.User.UserType.USERTYPE_SYSTEMADMIN)
 
 def admin_create_user(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if islogged_in and is_admin_logged_in:
         return render(request,"sign_up.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
@@ -38,7 +40,7 @@ def admin_create_user(request):
 
 def admin_AddUserProfile(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
     if request.method == "POST":
@@ -127,7 +129,7 @@ def admin_AddUserProfile(request):
 
 def admin_ViewAllUsers(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
@@ -164,7 +166,7 @@ def admin_ViewAllUsers(request):
 
 def admin_SearchUsers(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
@@ -180,7 +182,7 @@ def admin_SearchUsers(request):
 
 def admin_ViewUser(request, message=None):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
@@ -224,7 +226,7 @@ def admin_ViewUser(request, message=None):
 
 def admin_UpdateUser(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
@@ -283,7 +285,7 @@ def admin_UpdateUser(request):
 
 def admin_SuspendUser(request):
     islogged_in = controller_util.check_login(request)
-    is_admin_logged_in = controller_util.check_admin_login(request)
+    is_admin_logged_in = check_admin_login(request)
 
     if not islogged_in or not is_admin_logged_in:
         admin_error_handle(request)
