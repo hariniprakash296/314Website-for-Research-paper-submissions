@@ -41,8 +41,9 @@ def admin_create_user(request):
 def admin_AddUserProfile(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
+
     if request.method == "POST":
         # TODO add form checks here or in html as javascript
         user_type = request.POST.get('user_type')
@@ -131,8 +132,8 @@ def admin_ViewAllUsers(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
 
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
 
     if request.method != "POST" or not request.POST.get('user_type'):
         users = models.User.objects.all()
@@ -168,8 +169,8 @@ def admin_SearchUsers(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
 
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
 
     if request.method == "POST":
         if request.POST.get('name'):
@@ -184,8 +185,8 @@ def admin_ViewUser(request, message=None):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
 
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
 
     if request.method == "POST":
         # TODO add form checks here or in html as javascript
@@ -228,8 +229,8 @@ def admin_UpdateUser(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
 
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
 
     if request.method == "POST":
         # TODO add form checks here or in html as javascript
@@ -287,8 +288,8 @@ def admin_SuspendUser(request):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = check_admin_login(request)
 
-    if not islogged_in or not is_admin_logged_in:
-        admin_error_handle(request)
+    if not (islogged_in and is_admin_logged_in):
+        return admin_error_handle(request)
 
     if request.method == "POST":
         # TODO add form checks here or in html as javascript

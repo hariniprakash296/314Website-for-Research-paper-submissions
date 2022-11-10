@@ -30,11 +30,13 @@ def check_author_login(request):
     return controller_util.check_type_login(request, models.User.UserType.USERTYPE_AUTHOR)
 
 def author_start_new_paper(request, message):
+    #requires: nothing
+    #returns: nothing
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
     if not (islogged_in and is_author_logged_in):
-        author_error_handle(request)
+        return author_error_handle(request)
     
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
     
@@ -44,15 +46,19 @@ def author_start_new_paper(request, message):
     return render(request,".html", context)
 
 def author_StartNewPaper(request):
+    #requires: author_emails = emails of all the selected authors, split by ',' excluding own email
+    #returns: nothing
+
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
     if not (islogged_in and is_author_logged_in):
-        author_error_handle(request)
+        return author_error_handle(request)
     
     if request.method == "POST":
 
         user_emails = request.POST.get('author_emails').strip().split(",")
+        user_emails.append(request.COOKIES.get('email'))
         author_list = list()
         for email in user_emails:
             email = email.strip()
@@ -72,31 +78,63 @@ def author_StartNewPaper(request):
 
         return author_start_new_paper(request, "Paper successfully created.")
 
-def author_view_paper(request, message=None):
+def author_list_papers(request, message=None):
+    #requires: nothing
+    #returns: authored_papers = list of all the papers that user is listed as author of
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
     if not (islogged_in and is_author_logged_in):
-        author_error_handle(request)
+        return author_error_handle(request)
+
+    email = request.COOKIES.get('email')
+    author = models.Author.objects.get(login_email=email)
+
+    all_authors = models.Authors.objects.get(author_user_id=author.user_id)
+    authored_papers = list()
+    for authors in all_authors:
+        paper = models.Paper.objects.get(paper_id=authors.paper_id)
+        authored_papers.append(paper)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
+    return render(request,".html", context)
+
+def author_view_paper(request, message=None):
+    #requires: paper_id = id of selected paper
+    #returns: selected_paper = all the details of the paper that the user selected
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_author_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return author_error_handle(request)
         
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
-        paper = models.Paper.objects.get(paper_id=paper_id)
-        context["selected_paper"] = paper
+
+        author = models.Author.objects.get(login_email=request.COOKIES.get('email'))
+
+        try:
+            authors = models.Authors.objects.get(paper_id=paper_id, author_user_id=author.user_id)
+            paper = models.Paper.objects.get(paper_id=paper_id)
+            context["selected_paper"] = paper
+        except models.Authors.DoesNotExist as e:
+            return author_list_papers(request, "Not author of selected paper")
 
     if message != None:
         context["message"] = message
 
-        return render(request,".html", context)
+    return render(request,".html", context)
 
 def author_SavePaper(request):
+    #requires: paper_id = id of selected paper
+    #returns: selected_paper = all the details of the paper that the user selected
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
     if not (islogged_in and is_author_logged_in):
-        author_error_handle(request)
+        return author_error_handle(request)
     
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
