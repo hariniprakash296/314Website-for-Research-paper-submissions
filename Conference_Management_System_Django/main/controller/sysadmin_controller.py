@@ -34,7 +34,7 @@ def admin_create_user(request):
     is_admin_logged_in = check_admin_login(request)
 
     if islogged_in and is_admin_logged_in:
-        return render(request,"sign_up.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
+        return render(request,"admin_register.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
     else:
         admin_error_handle(request)
 
@@ -55,7 +55,7 @@ def admin_AddUserProfile(request):
         
         if user_type == None or len(email) == 0 or len(password) == 0 or len(name) == 0:
             context["message"] = "Please fill all fields."
-            return render(request, "sign_up.html", context)
+            return render(request, "admin_register.html", context)
 
 
         hashed_password = hashlib.sha224(password).hexdigest()

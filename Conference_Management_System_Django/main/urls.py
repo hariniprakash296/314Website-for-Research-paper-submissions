@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .controller import loginout_controller, sysadmin_controller
+from .controller import loginout_controller, sysadmin_controller, author_controller
 from . import views
 #from .controller import *
 from django.conf import settings
@@ -10,13 +10,21 @@ urlpatterns = [
     path('login', loginout_controller.login, name='login'),
     path('login_ValidateInfo', loginout_controller.login_ValidateInfo, name='login_ValidateInfo'),
     path('logout',loginout_controller.logout_handle,name='logout_handle'),
-    path('admin_create_user', sysadmin_controller.admin_create_user, name='sign_up'),
-    path('admin_AddUserProfile', sysadmin_controller.admin_AddUserProfile, name='sign_up_handle'),
+
+    path('admin_create_user', sysadmin_controller.admin_create_user, name='register'),
+    path('admin_AddUserProfile', sysadmin_controller.admin_AddUserProfile, name='register_handle'),
     path('view_all_users', sysadmin_controller.admin_ViewAllUsers, name='view_all_users'),
     path('search_users', sysadmin_controller.admin_SearchUsers, name='search_users'),
     path('view_user', sysadmin_controller.admin_ViewUser, name='view_user'),
     path('update_user', sysadmin_controller.admin_UpdateUser, name='update_user'),
     path('suspend_user', sysadmin_controller.admin_SuspendUser, name='suspend_user'),
+
+    path('author_start_new_paper', author_controller.author_start_new_paper, name='new_paper'),
+    path('author_StartNewPaper', author_controller.author_StartNewPaper, name='new_paper_handle'),
+    path('author_list_papers', author_controller.author_list_papers, name='list_papers'),
+    path('author_view_paper', author_controller.author_view_paper, name='view_paper'),
+    path('author_SavePaper', author_controller.author_SavePaper, name='save_paper'),
+
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
 
     path('conferences',views.conferences, name="conferences"),
