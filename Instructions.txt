@@ -17,10 +17,20 @@ generate sql code to create tables based on model.py
 python manage.py makemigrations main
 python manage.py sqlmigrate polls [integer]
 
-test admin accounts
-email:  ioaisdjoias@asd.od
-pw:     password
+test accounts accounts
+admin email:  somesysadmin@gmail.com
+conf chair email:  someconfchair@gmail.com
+reviewer email:  somereviewer@gmail.com
+author email:  someauthor@gmail.com
 
-test author accounts
-email:  someauthor@gmail.com
-pw:     password
+all pws:     password
+
+
+python manage.py shell
+from main.models import SystemAdmin
+from main.controller.controller_util import hash_string
+SystemAdmin.objects.create(login_email="somesysadmin@gmail.com", login_pw=hash_string("password"), name="Amuro", user_type=0)
+ConferenceChair.objects.create(login_email="someconfchair@gmail.com", login_pw=hash_string("password"), name="Bob", user_type=1)
+Reviewer.objects.create(login_email="somereviewer@gmail.com", login_pw=hash_string("password"), name="Char", user_type=2)
+Author.objects.create(login_email="someauthor@gmail.com", login_pw=hash_string("password"), name="Dan", user_type=3)
+exit()

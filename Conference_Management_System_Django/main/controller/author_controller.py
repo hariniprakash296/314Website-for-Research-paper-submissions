@@ -43,7 +43,7 @@ def author_start_new_paper(request, message):
     if message != None:
         context["message"] = message
 
-    return render(request,".html", context)
+    return render(request,"author_newpaper.html", context)
 
 def author_StartNewPaper(request):
     #requires: author_emails = emails of all the selected authors, split by ',' excluding own email
@@ -90,14 +90,14 @@ def author_list_papers(request, message=None):
     email = request.COOKIES.get('email')
     author = models.Author.objects.get(login_email=email)
 
-    all_authors = models.Authors.objects.get(author_user_id=author.user_id)
+    all_writes = models.Writes.objects.get(author_user_id=author.user_id)
     authored_papers = list()
-    for authors in all_authors:
-        paper = models.Paper.objects.get(paper_id=authors.paper_id)
+    for writes in all_writes:
+        paper = models.Paper.objects.get(paper_id=writes.paper_id)
         authored_papers.append(paper)
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
-    return render(request,".html", context)
+    return render(request,"author_listpapers.html", context)
 
 def author_view_paper(request, message=None):
     #requires: paper_id = id of selected paper
@@ -116,16 +116,16 @@ def author_view_paper(request, message=None):
         author = models.Author.objects.get(login_email=request.COOKIES.get('email'))
 
         try:
-            authors = models.Authors.objects.get(paper_id=paper_id, author_user_id=author.user_id)
+            writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
             paper = models.Paper.objects.get(paper_id=paper_id)
             context["selected_paper"] = paper
-        except models.Authors.DoesNotExist as e:
+        except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper")
 
     if message != None:
         context["message"] = message
 
-    return render(request,".html", context)
+    return render(request,"author_viewpaper.html", context)
 
 def author_SavePaper(request):
     #requires: paper_id = id of selected paper
@@ -138,11 +138,17 @@ def author_SavePaper(request):
     
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
+        author = models.Author.objects.get(login_email=request.COOKIES.get('email'))
 
-        paper = models.Paper.objects.get(paper_id=paper_id)
-        paper.paper_name = request.POST.get('new_name')
-        paper.paper_details = request.POST.get('new_details')
-        paper.save()
+        try:
+            writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
+            paper = models.Paper.objects.get(paper_id=paper_id)
+            paper.paper_name = request.POST.get('new_name')
+            paper.paper_details = request.POST.get('new_details')
+            paper.save()
 
-        return author_view_paper(request, "Paper successfully saved")
+            return author_view_paper(request, "Paper successfully saved")
+        except models.Writes.DoesNotExist as e:
+            return author_list_papers(request, "Not author of selected paper")
+            
 

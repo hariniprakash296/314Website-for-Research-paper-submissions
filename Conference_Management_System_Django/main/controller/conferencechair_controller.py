@@ -29,29 +29,103 @@ def conferencechair_error_handle(request):
 def check_conferencechair_login(request):
     return controller_util.check_type_login(request, models.User.UserType.USERTYPE_CONFERENCECHAIR)
 
-def conferencechair_view_bidding(request):
+#view papers
+def conferencechair_view_all_papers(request):
+    #requires: none
+    #returns: paperstatus_dict = dictionary of all the paper status labels, key = int, val = string
+    #returns: papers = list of all the papers
+    #returns: papers_additional_info = nested dictionary of additional values for papers.
+    #                                  dict(int paper_id, dict(string key, ? value))
+    #                                                           ^ "isAllocated", "isBid"
+
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
 
     if not (islogged_in and is_conferencechair_logged_in):
-        conferencechair_error_handle(request)
+        return conferencechair_error_handle(request)
 
-    ''' 
-    first is to find the name of the reviewer
-    then view the reviewer's bidding and workload    
-    '''
+    papers = models.Paper.objects.all()
+
+    papers_additional_info = dict()
+    for paper in papers:
+        additional_info = dict()
+        paper_id = paper.paper_id
+
+        try:
+            bids = models.Bids.objects.get(paper_id=paper_id)
+            additional_info["is_bid"] = True
+        except models.Bids.DoesNotExist as e:
+            additional_info["is_bid"] = False
+
+        try:
+            reviews = models.Reviews.objects.get(paper_id=paper_id)
+            additional_info["is_allocated"] = True
+        except models.Reviews.DoesNotExist as e:
+            additional_info["is_allocated"] = False
+
+        papers_additional_info[paper_id] = additional_info
+
+    
+    paperstatus_dict = dict()
+    for key, value in models.Paper.PaperStatus.choices:
+        paperstatus_dict[key] = value
+        
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'),
+                "papers":papers, "paperstatus_dict":paperstatus_dict, "papers_additional_info":papers_additional_info}
+
+    return render(request,"conferencechair_listpapers.html", context)
+
+#view biddings of papers
+def conferencechair_view_bidding(request):
+    #requires: paper_id = id of selected paper
+    #returns: paper = details of selected paper
+    #returns: reviewers = list of all the reviewers
+    #returns: reviewer_additional_info = nested dictionary of additional values for reviewers.
+    #                                    dict(int reviewer_user_id, dict(string key, ? value))
+    #                                                           ^ "isAllocated", "isBid", "unreviewed_num"
+
+    islogged_in = controller_util.check_login(request)
+    is_conferencechair_logged_in = check_conferencechair_login(request)
+
+    if not (islogged_in and is_conferencechair_logged_in):
+        return conferencechair_error_handle(request)
     
     if request.method == "POST":
-        name = request.POST.get('name')
-        max_papers = request.POST.get('maxpapers')
-        workload = models.Reviewer.get_max_papers(max_papers=max_papers)
+        paper_id = request.POST.get('paper_id')
+        paper= models.Paper.objects.get(paper_id=paper_id)
 
-        user = models.Reviewer.objects.get(name=name)
-        user.bidding = request.POST.get('bidding')
-        user.workload = request.POST.get('workload')
+        reviewers = models.Reviewer.objects.all()
 
-        return conferencechair_view_bidding(request, "Reviewer's bidding and preferred workload displayed.")
+        reviewer_additional_info = dict()
+        for reviewer in reviewers:
+            additional_info = dict()
 
+            try:
+                user_bid = models.Bids.objects.get(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+                additional_info["is_bid"] = user_bid.is_bidding
+            except models.Bids.DoesNotExist as e:
+                additional_info["is_bid"] = False
+
+            try:
+                user_reviews = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+                additional_info["is_allocated"] = True
+            except models.Reviews.DoesNotExist as e:
+                additional_info["is_allocated"] = False
+
+            try:
+                unreviewed_num = len(models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, reviewer_rating=models.Reviews.Rating.UNRATED))
+                additional_info["unreviewed_num"] = unreviewed_num
+            except models.Reviews.DoesNotExist as e:
+                additional_info["unreviewed_num"] = 0
+
+            reviewer_additional_info[reviewer.user_id] = additional_info
+
+        context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'),
+                    "paper":paper, "reviewers":reviewers, "reviewer_additional_info":reviewer_additional_info}
+
+        return render(request,"conferencechair_listpapers.html", context)
+
+#allocate paper to reviewer
 def conferencechair_allocate(request):
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)

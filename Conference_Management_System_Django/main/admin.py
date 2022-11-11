@@ -8,7 +8,7 @@ admin.site.register(models.Reviewer)
 admin.site.register(models.Author)
 admin.site.register(models.Paper)
 admin.site.register(models.Bids)
-admin.site.register(models.Authors)
+admin.site.register(models.Writes)
 admin.site.register(models.Reviews)
 admin.site.register(models.ReviewComments)
 
