@@ -36,7 +36,7 @@ def admin_create_user(request):
     if islogged_in and is_admin_logged_in:
         return render(request,"admin_register.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
     else:
-        admin_error_handle(request)
+        return admin_error_handle(request)
 
 def admin_AddUserProfile(request):
     islogged_in = controller_util.check_login(request)
