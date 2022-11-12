@@ -85,7 +85,7 @@ def admin_AddUserProfile(request):
                 models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_AUTHOR)
 
             
-        return render(request, "sign_up.html", context)
+        return render(request, "admin_register.html", context)
 
         """
         # if user_type == "author":

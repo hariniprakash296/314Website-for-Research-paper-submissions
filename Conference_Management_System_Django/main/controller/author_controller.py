@@ -40,7 +40,7 @@ def author_start_new_paper(request, message):
     
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
     
-    if message != None:
+    if message != None and not "message" in context:
         context["message"] = message
 
     return render(request,"author_newpaper.html", context)
@@ -97,6 +97,10 @@ def author_list_papers(request, message=None):
         authored_papers.append(paper)
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
     return render(request,"author_listpapers.html", context)
 
 def author_view_paper(request, message=None):
@@ -122,7 +126,7 @@ def author_view_paper(request, message=None):
         except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper")
 
-    if message != None:
+    if message != None and not "message" in context:
         context["message"] = message
 
     return render(request,"author_viewpaper.html", context)
