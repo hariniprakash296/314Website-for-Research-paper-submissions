@@ -82,7 +82,7 @@ def conferencechair_view_reviewers(request, message=None):
     #returns: reviewers = list of all the reviewers
     #returns: reviewer_additional_info = nested dictionary of additional values for reviewers.
     #                                    dict(int reviewer_user_id, dict(string key, ? value))
-    #                                                           ^ "is_allocated", "is_bid", "unreviewed_num"
+    #                                                           ^ "is_allocated", "is_bid", "currently_reviewing_count"
 
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
@@ -112,11 +112,7 @@ def conferencechair_view_reviewers(request, message=None):
             except models.Reviews.DoesNotExist as e:
                 additional_info["is_allocated"] = False
 
-            try:
-                unreviewed_num = len(models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, reviewer_rating=models.Reviews.Rating.UNRATED))
-                additional_info["unreviewed_num"] = unreviewed_num
-            except models.Reviews.DoesNotExist as e:
-                additional_info["unreviewed_num"] = 0
+            additional_info["currently_reviewing_count"] = reviewer.get_currently_reviewing_count()
 
             reviewer_additional_info[reviewer.user_id] = additional_info
 
@@ -143,14 +139,21 @@ def conferencechair_allocate(request):
         try:
             paper = models.Paper.objects.get(paper_id=paper_id)
             reviewer = models.Reviewer.objects.get(user_id=reviewer_user_id)
+
+            if not reviewer.can_be_allocated_another_paper():
+                return conferencechair_view_reviewers(request, "Error. Reviewer has already been allocated the maximum number of papers.")
+            
+            if reviewer.is_reviewer_of_paper(paper_id):
+                return conferencechair_view_reviewers(request, "Error. Reviewer has already been allocated the selected paper.")
+
             models.Reviews.objects.create(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
 
-            return conferencechair_view_bidding(request, "Paper successfully allocated to reviewer.")
+            return conferencechair_view_reviewers(request, "Paper successfully allocated to reviewer.")
 
         except models.Paper.DoesNotExist as e:
-            return conferencechair_view_bidding(request, "Error. Paper not found.")
+            return conferencechair_view_reviewers(request, "Error. Paper not found.")
         except models.Reviewer.DoesNotExist as e:
-            return conferencechair_view_bidding(request, "Error. Reviewer not found.")
+            return conferencechair_view_reviewers(request, "Error. Reviewer not found.")
 
 def conferencechair_view_paper_ratingreview(request):
     islogged_in = controller_util.check_login(request)

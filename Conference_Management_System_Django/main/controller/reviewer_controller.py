@@ -1,0 +1,144 @@
+from django.shortcuts import render
+from django.http import HttpResponse,Http404
+from main import models
+import hashlib
+from main import Utils
+from threading import Lock
+from threading import Thread
+from conferencesystem import settings
+import datetime
+from django.core.files.storage import FileSystemStorage
+import os
+from main import constants
+from django.db.models import Q
+from django.utils import timezone
+from django.utils.encoding import smart_str
+from django.shortcuts import redirect
+from main.controller import controller_util
+
+email_lock = Lock()
+
+#view funcs	
+def reviewer_error_handle(request):
+    response = render(request, "login.html", {"islogged_in": False, "is_admin_logged_in":False, 'message':'You are not a reviewer.'})
+    response.delete_cookie('user_type')
+    response.delete_cookie('email')
+    response.delete_cookie('password')
+    return response
+
+def check_reviewer_login(request):
+    return controller_util.check_type_login(request, models.User.UserType.USERTYPE_REVIEWER)
+
+def reviewer_list_biddable_papers(request, message=None):
+    #requires: nothing
+    #returns: biddable_papers = list of all the papers that can be bid on
+    #returns: bids_additional_info = dictionary of whether reviewer has bid on each paper.
+    #                                  dict(int paper_id, bool is_bid)
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_reviewer_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return reviewer_error_handle(request)
+
+    biddable_papers = models.Paper.objects.get(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
+    
+    email = request.COOKIES.get('email')
+    reviewer = models.Reviewer.objects.get(login_email=email)
+
+    bids_additional_info = dict()
+    for biddable_paper in biddable_papers:
+        bids_additional_info[biddable_paper.paper_id] = models.Bids.get_reviewer_bid(reviewer.user_id, biddable_paper.paper_id)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "biddable_papers":biddable_papers, "bids_additional_info":bids_additional_info}
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
+    return render(request,"reviewer_listbiddablepapers.html", context)
+
+def reviewer_BidPaper(request):
+    #requires: paper_id = id of selected paper
+    #returns: nothing
+    if request.method == "POST":
+        paper_id = request.POST.get('paper_id')
+        
+        try:
+            paper = models.Paper.objects.get(paper_id=paper_id)
+            email = request.COOKIES.get('email')
+            reviewer = models.Reviewer.objects.get(login_email=email)
+
+            bidExists, bid = models.Bids.does_bid_exist(reviewer.user_id, paper_id)
+            if not bidExists:
+                bid = models.Bids.objects.create(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+            else:
+                bid.toggle_reviewer_bid()
+            
+            message = "Successfully removed bid on "
+            if bid.is_bidding:
+                message = "Successfully bid on "
+
+            return reviewer_list_biddable_papers(request, message+paper.paper_name)
+        except models.Paper.DoesNotExist as e:
+            return reviewer_list_biddable_papers(request, "Error: Specified paper cannot be found.")
+        except models.Reviewer.DoesNotExist as e:
+            return reviewer_list_biddable_papers(request, "Error: Reviewer account cannot be found.")
+    
+
+def reviewer_list_reviewed_papers(request, message=None):
+    #requires: nothing
+    #returns: reviewed_papers = list of all the papers that user is listed as reviewer of
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_reviewer_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return reviewer_error_handle(request)
+
+    email = request.COOKIES.get('email')
+    reviewer = models.Reviewer.objects.get(login_email=email)
+
+    all_reviews = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id)
+    reviewed_papers = list()
+    for reviews in all_reviews:
+        paper = models.Paper.objects.get(paper_id=reviews.paper_id)
+        reviewed_papers.append(paper)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers.reverse()}
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
+    return render(request,"reviewer_listreviewingpapers.html", context)
+
+def reviewer_view_paper(request, message=None):
+    #requires: paper_id = id of selected paper
+    #returns: selected_paper = all the details of the paper that the user selected
+    #returns: authors = all the authors of the selected paper
+    islogged_in = controller_util.check_login(request)
+    is_reviewer_logged_in = check_reviewer_login(request)
+
+    if not (islogged_in and is_reviewer_logged_in):
+        return reviewer_error_handle(request)
+        
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
+
+    if request.method == "POST":
+        paper_id = request.POST.get('paper_id')
+
+        email = request.COOKIES.get('email')
+        reviewer = models.Reviewer.objects.get(login_email=email)
+
+        if not reviewer.is_reviewer_of_paper(paper_id):
+            return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
+
+        context["authors"] = models.Author.get_all_authors_of_paper(paper_id)
+
+        paper = models.Paper.objects.get(paper_id=paper_id)
+        context["selected_paper"] = paper
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
+    return render(request,"reviewer_viewpaper.html", context)
+
+            
+

@@ -19,6 +19,10 @@ class User(PolymorphicModel):
     name = models.CharField(null=False, max_length=30)
     is_suspended = models.BooleanField(null=False, default=False)
     user_type = models.IntegerField(null=False, choices=UserType.choices)
+
+    def toggle_user_suspension(self):
+        self.is_suspended = not self.is_suspended
+        self.save()
     
 class SystemAdmin(User):
     def __str__(self):
@@ -31,10 +35,51 @@ class ConferenceChair(User):
 class Reviewer(User):
     max_papers = models.PositiveIntegerField(null=False, default=5)
 
+    def get_currently_reviewing_count(self):
+        currently_reviewing_count = 0
+        try:
+            currently_reviewing = models.Reviews.objects.get(reviewer_user_id=self.user_id, reviewer_rating=models.Reviews.Rating.UNRATED)
+
+            if type(currently_reviewing) is list:
+                currently_reviewing_count = len(currently_reviewing)
+            else:
+                currently_reviewing_count = 1
+        except models.Reviews.DoesNotExist as e:
+            currently_reviewing_count = 0
+
+        return currently_reviewing_count
+
+    def can_be_allocated_another_paper(self):
+        return self.get_currently_reviewing_count() < self.max_papers
+
+    def is_reviewer_of_paper(self, paper_id):
+        try:
+            reviews = models.Reviews.objects.get(reviewer_user_id=self.user_id, paper_id=paper_id)
+            return True
+        except models.Reviews.DoesNotExist as e:
+            return False
+
+
     def __str__(self):
         return "Reviewer"
 
 class Author(User):
+
+    @staticmethod
+    def get_all_authors_of_paper(paper_id):
+        authors = list()
+
+        try:
+            writes = models.Writes.objects.get(paper_id=paper_id)
+            for write in writes:
+                author = models.Author.objects.get(user_id=write.author_user_id)
+                authors.append(author)
+        except models.Writes.DoesNotExist as e:
+            #no authors for specified paper id
+            print(e)
+
+        return authors
+
     def __str__(self):
         return "Author"
     
@@ -57,6 +102,26 @@ class Bids(models.Model):
     reviewer_user_id = models.ForeignKey('User', on_delete=models.CASCADE)
     paper_id = models.ForeignKey('Paper', on_delete=models.CASCADE)
     is_bidding = models.BooleanField(null=False, default=True)
+
+    def toggle_reviewer_bid(self):
+        self.is_bidding = not self.is_bidding
+        self.save()
+
+    @staticmethod
+    def does_bid_exist(reviewer_user_id, paper_id):
+        try:
+            bid = models.Bids.objects.get(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
+            return (True, bid)
+        except models.Bids.DoesNotExist as e:
+            return (False, None)
+
+    @staticmethod
+    def get_reviewer_bid(reviewer_user_id, paper_id):
+        bidExists, bid = Bids.does_bid_exist(reviewer_user_id, paper_id)
+        if bidExists:
+            return bid.is_bidding
+        
+        return False
 
 class Writes(models.Model):
     author_user_id = models.ForeignKey('User', on_delete=models.CASCADE)
