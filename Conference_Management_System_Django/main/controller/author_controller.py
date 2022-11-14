@@ -56,7 +56,6 @@ def author_StartNewPaper(request):
         return author_error_handle(request)
     
     if request.method == "POST":
-
         user_emails = request.POST.get('author_emails').strip().split(",")
         user_emails.append(request.COOKIES.get('email'))
         author_list = list()

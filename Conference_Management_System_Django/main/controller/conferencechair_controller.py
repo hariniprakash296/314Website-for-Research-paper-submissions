@@ -44,7 +44,7 @@ def conferencechair_view_all_papers(request):
     if not (islogged_in and is_conferencechair_logged_in):
         return conferencechair_error_handle(request)
 
-    papers = models.Paper.objects.all()
+    papers = models.Paper.objects.get(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
 
     papers_additional_info = dict()
     for paper in papers:
@@ -126,11 +126,18 @@ def conferencechair_view_reviewers(request, message=None):
 
 #allocate paper to reviewer
 def conferencechair_allocate(request):
+    #requires: paper_id = id of selected paper
+    #requires: reviewer_user_id = id of selected reviewer
+    #returns: paper = details of selected paper
+    #returns: reviewers = list of all the reviewers
+    #returns: reviewer_additional_info = nested dictionary of additional values for reviewers.
+    #                                    dict(int reviewer_user_id, dict(string key, ? value))
+    #                                                           ^ "is_allocated", "is_bid", "currently_reviewing_count"
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
 
     if not (islogged_in and is_conferencechair_logged_in):
-        conferencechair_error_handle(request)
+        return conferencechair_error_handle(request)
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
@@ -155,23 +162,7 @@ def conferencechair_allocate(request):
         except models.Reviewer.DoesNotExist as e:
             return conferencechair_view_reviewers(request, "Error. Reviewer not found.")
 
-def conferencechair_view_paper_ratingreview(request):
-    islogged_in = controller_util.check_login(request)
-    is_conferencechair_logged_in = check_conferencechair_login(request)
-
-    if not (islogged_in and is_conferencechair_logged_in):
-        conferencechair_error_handle(request)
-    """
-    View paper page, view paper and upon clicking will display review and rating
-    """
-    if request.method == "POST":
-        paper_id = request.POST.get('paper_id')
-        paper = models.Paper.objects.get(paper_id=paper_id)
-
-        paper.paper_details = request.POST.get('paper_details')
-        paper.display()
-
-        return conferencechair_view_paper_ratingreview(request)
+        
 
 
 
