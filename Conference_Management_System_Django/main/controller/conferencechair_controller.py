@@ -36,7 +36,7 @@ def conferencechair_view_all_papers(request):
     #returns: papers = list of all the papers
     #returns: papers_additional_info = nested dictionary of additional values for papers.
     #                                  dict(int paper_id, dict(string key, ? value))
-    #                                                           ^ "isAllocated", "isBid"
+    #                                                           ^ "is_allocated", "is_bid"
 
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
@@ -76,13 +76,13 @@ def conferencechair_view_all_papers(request):
     return render(request,"conferencechair_listpapers.html", context)
 
 #view biddings of papers
-def conferencechair_view_bidding(request):
+def conferencechair_view_reviewers(request, message=None):
     #requires: paper_id = id of selected paper
     #returns: paper = details of selected paper
     #returns: reviewers = list of all the reviewers
     #returns: reviewer_additional_info = nested dictionary of additional values for reviewers.
     #                                    dict(int reviewer_user_id, dict(string key, ? value))
-    #                                                           ^ "isAllocated", "isBid", "unreviewed_num"
+    #                                                           ^ "is_allocated", "is_bid", "currently_reviewing_count"
 
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
@@ -112,18 +112,17 @@ def conferencechair_view_bidding(request):
             except models.Reviews.DoesNotExist as e:
                 additional_info["is_allocated"] = False
 
-            try:
-                unreviewed_num = len(models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, reviewer_rating=models.Reviews.Rating.UNRATED))
-                additional_info["unreviewed_num"] = unreviewed_num
-            except models.Reviews.DoesNotExist as e:
-                additional_info["unreviewed_num"] = 0
+            additional_info["currently_reviewing_count"] = reviewer.get_currently_reviewing_count()
 
             reviewer_additional_info[reviewer.user_id] = additional_info
 
         context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'),
                     "paper":paper, "reviewers":reviewers, "reviewer_additional_info":reviewer_additional_info}
+                    
+    if message != None and not "message" in context:
+        context["message"] = message
 
-        return render(request,"conferencechair_listpapers.html", context)
+    return render(request,"conferencechair_listreviewers.html", context)
 
 #allocate paper to reviewer
 def conferencechair_allocate(request):
@@ -135,24 +134,26 @@ def conferencechair_allocate(request):
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
-        name = request.POST.get('name')
+        reviewer_user_id = request.POST.get('reviewer_user_id')
 
-        ''' 
-            first is to go to paper page(?) and view a list of papers available to be allocated
-            maybe there's like a button(?) for the conference chair to select and assign the paper to the reviewer_homepage
+        try:
+            paper = models.Paper.objects.get(paper_id=paper_id)
+            reviewer = models.Reviewer.objects.get(user_id=reviewer_user_id)
 
-            or it is to go to the reviewer page and have a assign button where the conference chair 
-            clicks and selects reviewer to assign to  
-
+            if not reviewer.can_be_allocated_another_paper():
+                return conferencechair_view_reviewers(request, "Error. Reviewer has already been allocated the maximum number of papers.")
             
-            '''
-        paper = models.Paper.objects.get(paper_id=paper_id)
+            if reviewer.is_reviewer_of_paper(paper_id):
+                return conferencechair_view_reviewers(request, "Error. Reviewer has already been allocated the selected paper.")
 
-        reviewer = models.Reviewer.objects.get(name=name)
-        #(no idea) the paper will be allocated to the reviewer, thats why i included paper.append(reviewer)
-        paper.append(reviewer)
+            models.Reviews.objects.create(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
 
-        return conferencechair_allocate(request, "Paper assigned to reviewer.")
+            return conferencechair_view_reviewers(request, "Paper successfully allocated to reviewer.")
+
+        except models.Paper.DoesNotExist as e:
+            return conferencechair_view_reviewers(request, "Error. Paper not found.")
+        except models.Reviewer.DoesNotExist as e:
+            return conferencechair_view_reviewers(request, "Error. Reviewer not found.")
 
 def conferencechair_view_paper_ratingreview(request):
     islogged_in = controller_util.check_login(request)

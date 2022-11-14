@@ -36,7 +36,7 @@ def admin_create_user(request):
     if islogged_in and is_admin_logged_in:
         return render(request,"admin_register.html",{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
     else:
-        admin_error_handle(request)
+        return admin_error_handle(request)
 
 def admin_AddUserProfile(request):
     islogged_in = controller_util.check_login(request)
@@ -48,15 +48,21 @@ def admin_AddUserProfile(request):
         # TODO add form checks here or in html as javascript
         user_type = request.POST.get('user_type')
         email = request.POST.get('email').strip()
-        password = request.POST.get('password').encode('utf-8')
+        password = request.POST.get('password').strip().encode('utf-8')
         name = request.POST.get('name').strip()
+        max_papers = request.POST.get('max_papers').strip()
 
         context = {"islogged_in": islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
         
-        if user_type == None or len(email) == 0 or len(password) == 0 or len(name) == 0:
+        if user_type == None or len(email) == 0 or len(password) == 0 or len(name) == 0 or (user_type == "reviewer" and len(max_papers) == 0):
             context["message"] = "Please fill all fields."
             return render(request, "admin_register.html", context)
 
+        if user_type == "reviewer": 
+            max_papers = int(max_papers)
+            if max_papers < 1:
+                context["message"] = "Reviewer max paper number must be a positive integer."
+                return render(request, "admin_register.html", context)
 
         hashed_password = hashlib.sha224(password).hexdigest()
         try:
@@ -64,9 +70,6 @@ def admin_AddUserProfile(request):
             context["message"] = "Account with the specified email already exists."
 
         except models.User.DoesNotExist as e:
-            print(e)
-            context["message"] = "User successfully created."
-
             if user_type == "admin":
                 #0 = system admin
                 models.SystemAdmin.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_SYSTEMADMIN)
@@ -77,15 +80,17 @@ def admin_AddUserProfile(request):
                 
             elif user_type == "reviewer":
                 #2 = reviewer
-                max_papers = int(request.POST.get('max_papers'))
                 models.Reviewer.objects.create(login_email=email, login_pw=hashed_password, name=name, max_papers=max_papers, user_type=models.User.UserType.USERTYPE_REVIEWER)
                 
             elif user_type == "author":
                 #3 = author
                 models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_AUTHOR)
+            
+            #print(e)
+            context["message"] = "User successfully created."
 
             
-        return render(request, "sign_up.html", context)
+        return render(request, "admin_register.html", context)
 
         """
         # if user_type == "author":
@@ -297,8 +302,7 @@ def admin_SuspendUser(request):
         
         user = models.User.objects.get(user_id=user_id)
 
-        user.is_suspended = not user.is_suspended
-        user.save()
+        user.toggle_user_suspension()
 
         un_str = "un"
         if user.is_suspended:
