@@ -49,9 +49,20 @@
 }
 
 .pagename {
-    padding: 2px;
+    border-radius: 15px;
+    padding: 0.5px;
     font-size: 15px;
     color: aliceblue;
     background-position: right bottom, left top;
     background-repeat: no-repeat, repeat; background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
 }
+
+.contentStyling {
+    background-image: linear-gradient(to bottom right, rgb(228, 130, 248),rgb(0, 234, 255));
+    color: aliceblue; 
+    font-family: Brush Script MT;
+    font-size: 100%; 
+    border: width 500px; align-content: center; padding: 10%; margin-right: 10%; margin-left: 10%; margin-bottom: 30%;
+    border-radius: 25px;
+}
+
