@@ -26,9 +26,11 @@
         </form>
         <form action="suspend_user" method="post">
             {% csrf_token %}
+            <span style="font-size: 3rem">
             <input type="hidden" name="user_id" value = {{selected_user.user_id}}>
             <br>
             <input type="submit" value={% if selected_user.is_suspended %} "Unsuspend User" {% else %} "Suspend User" {% endif %}>
+            </span>
         </form>
     </div>
 </div>

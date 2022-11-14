@@ -9,27 +9,31 @@
     {% block head %}
     {% endblock %}
 </head>
-
 <div class="pagename">
-    <h1 style="text-align: left; font-family: cursive; font-style: italic;"><u>7 Musketeers Research Conference Management System</u></h1>
+    <h1 style="text-align: center; font-family: cursive; font-style: italic;"><u>7 Musketeers Research Conference Management System</u></h1>
 </div>
-
 <center><body style="padding: 10px; margin: 2px;">
     <div id="divMenuContainer">
         <div id="buttons">
-        <a style="color: aliceblue; font-family: 'Brush Script-MT';" href="/">Home</a>
+        <a style="color: aliceblue; font-family: 'Brush Script-MT'; border-radius: 25px;" href="/">Home</a>
         </div>
         {% if islogged_in == False %}
         <div id="buttons">
-            <a style="color: aliceblue; " href="login">Log in</a>
+            <a style="color: aliceblue; border-radius: 25px;" href="login">Log in</a>
         </div>
         {% else %}
-        <a href="logout">Log out</a>
+        <div id="buttons">
+        <a style="color: aliceblue; font-family: 'Brush Script-MT'; border-radius: 25px;"href="logout">Log out</a>
+        </div>
         {% endif %}
         </div>
 </div>
+<div class="contentStyling">
+<span style="font-size: 3rem">
 {{ message }}
+</span>
 {% block content %}
 {% endblock %}
+</div>
 </body>
 </html>

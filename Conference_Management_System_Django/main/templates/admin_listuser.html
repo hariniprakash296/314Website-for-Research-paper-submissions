@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 <div class="background">
 {% block content %}
+<span style="font-size: 2rem">
 <div>
     <table cellspacing="10">
         <tr>
@@ -42,6 +43,7 @@
                             <input type="checkbox" {% if user.is_suspended %} checked {% endif %}disabled>
                         </td>
                         <td>
+                            
                             <input type="submit" value="View user">
                         </td>
                     </form>
@@ -49,5 +51,6 @@
         {% endfor %}
     </table>
 </div>
+</span>
 {% endblock %}
 </div>
