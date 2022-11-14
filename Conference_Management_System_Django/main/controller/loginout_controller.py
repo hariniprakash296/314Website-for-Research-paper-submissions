@@ -81,7 +81,7 @@ def login_ValidateInfo(request):
                     
                 elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
                     #1 = conference chair
-                    template_name = "conference_chair_homepage.html"
+                    template_name = "conferencechair_homepage.html"
                     
                 elif user_type == models.User.UserType.USERTYPE_REVIEWER:
                     #2 = reviewer

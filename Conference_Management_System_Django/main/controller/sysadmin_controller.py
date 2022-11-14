@@ -50,7 +50,7 @@ def admin_AddUserProfile(request):
         email = request.POST.get('email').strip()
         password = request.POST.get('password').strip().encode('utf-8')
         name = request.POST.get('name').strip()
-        max_papers = request.POST.get('max_papers').strip()
+        max_papers = request.POST.get('max_papers')
 
         context = {"islogged_in": islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
         
@@ -59,7 +59,7 @@ def admin_AddUserProfile(request):
             return render(request, "admin_register.html", context)
 
         if user_type == "reviewer": 
-            max_papers = int(max_papers)
+            max_papers = int(max_papers.strip())
             if max_papers < 1:
                 context["message"] = "Reviewer max paper number must be a positive integer."
                 return render(request, "admin_register.html", context)
