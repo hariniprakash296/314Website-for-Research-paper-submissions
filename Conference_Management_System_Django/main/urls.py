@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .controller import loginout_controller, sysadmin_controller, author_controller
+from .controller import loginout_controller, sysadmin_controller, author_controller, reviewer_controller, conferencechair_controller
 from . import views
 #from .controller import *
 from django.conf import settings
@@ -25,6 +25,21 @@ urlpatterns = [
     path('author_view_paper', author_controller.author_view_paper, name='view_paper'),
     path('author_SavePaper', author_controller.author_SavePaper, name='save_paper'),
     path('author_SubmitPaper', author_controller.author_SubmitPaper, name='submit_paper'),
+    
+    path('reviewer_list_biddable_papers', reviewer_controller.reviewer_list_biddable_papers, name='reviewer_list_biddable_papers'),
+    path('reviewer_BidPaper', reviewer_controller.reviewer_BidPaper, name='reviewer_BidPaper'),
+    path('reviewer_list_reviewed_papers', reviewer_controller.reviewer_list_reviewed_papers, name='reviewer_list_reviewed_papers'),
+    path('reviewer_view_paper', reviewer_controller.reviewer_view_paper, name='reviewer_view_paper'),
+    path('reviewer_give_review', reviewer_controller.reviewer_give_review, name='reviewer_give_review'),
+    path('reviewer_SaveReview', reviewer_controller.reviewer_SaveReview, name='reviewer_SaveReview'),
+    path('reviewer_GiveRating', reviewer_controller.reviewer_GiveRating, name='reviewer_GiveRating'),
+    
+    path('conferencechair_view_all_papers', conferencechair_controller.conferencechair_view_submitted_papers, name='conferencechair_view_all_papers'),
+    path('conferencechair_view_reviewers', conferencechair_controller.conferencechair_view_reviewers, name='conferencechair_view_reviewers'),
+    path('conferencechair_AllocatePaper', conferencechair_controller.conferencechair_AllocatePaper, name='conferencechair_AllocatePaper'),
+    path('conferencechair_view_reviewed_papers', conferencechair_controller.conferencechair_view_reviewed_papers, name='conferencechair_view_reviewed_papers'),
+    path('conferencechair_view_reviewer_ratings', conferencechair_controller.conferencechair_view_reviewer_ratings, name='conferencechair_view_reviewer_ratings'),
+    path('conferencechair_AcceptRejectPaper', conferencechair_controller.conferencechair_AcceptRejectPaper, name='conferencechair_AcceptRejectPaper'),
 
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
 
