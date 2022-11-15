@@ -146,7 +146,8 @@ def emergency_manual_method(request):
 def test_template(request):
     # call via "http://127.0.0.1:8000/test_template"
 
-    template_name = "login.html"
+    # template_name = "conferencechair_listsubmittedpapers.html"
+    template_name = "conferencechair_listsubmittedpapers.html"
 
     return render(request,template_name,{"islogged_in":False, 'message':'Bad Authentication.', "is_admin_logged_in":False
                                                 , "user_type":request.COOKIES.get('user_type')})

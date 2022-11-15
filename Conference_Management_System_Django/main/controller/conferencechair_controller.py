@@ -80,7 +80,7 @@ def conferencechair_view_submitted_papers(request):
     context["paperstatus_dict"] = paperstatus_dict
     context["papers_additional_info"] = papers_additional_info
 
-    return render(request,"conferencechair_listpapers.html", context)
+    return render(request,"conferencechair_listsubmittedpapers.html", context)
 
 #view reviewers of selected paper, including biddings
 def conferencechair_view_reviewers(request, message=None):
@@ -198,7 +198,7 @@ def conferencechair_view_reviewed_papers(request, message=None):
 
     context["fully_reviewed_papers"] = fully_reviewed_papers
 
-    return render(request,"conferencechair_listpapers.html", context)
+    return render(request,"conferencechair_listreviewedpapers.html", context)
 
 def conferencechair_view_reviewer_ratings(request, message=None):
     #requires: paper_id = id of selected paper
