@@ -1,6 +1,7 @@
 {%extends "upper_menu.html" %}
 
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
@@ -11,30 +12,32 @@
                 Paper Title
             </th>
             <th>
+                Status
+            </th>
+            <th>
                 Select
             </th>
         </tr>
         {% for paper in authored_papers%}
         <tr>
-            <form action="list_papers" method="post">
+            <form action="author_view_paper" method="post">
                 {% csrf_token %}                
-                <input type="hidden" name="author_emails" value = {{paper.paper_id}}>
-                        <tr>
-                            <td>
-                                {{ paper.paper_name }}
-                            </td>
-                                <td>
-                                    Select Paper<input type="radio" value="Select paper" style="align: center;">
-                                </td>
-                        </tr>
+                <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                <tr>
+                    <td>
+                        {{ paper.paper_name }}
+                    </td>
+                    <td> 
+                        {{ paperstatus_dict|access_dict:paper.status }}
+                    </td>
+                    <td>
+                        <input type="submit" value="View Paper" style="align: center;">
+                    </td>
+                </tr>
                         
             </form>
         </tr>
         {% endfor %}
     </table>
-
-    <div class="user_button_group">
-        <div id="user_buttons"> <a href="author_view_paper" style="color: aliceblue; font-family: 'Brush Script-MT'; border-radius: 25px;">View</a> </div>
-    </div>
 </span>
 {% endblock content %}

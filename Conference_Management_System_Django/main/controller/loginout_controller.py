@@ -136,9 +136,14 @@ def emergency_manual_method(request):
     #     except Exception as e:
     #         print(e)
 
+    for paper in models.Paper.objects.all():
+        if paper.paper_name == "":
+            paper.paper_name = "Temp Title"
+            paper.save()
+
     return index(request)
 
-def create_users():
+def create_users(request):
     print(os.getcwd())
     password_file_name = "../namelist.txt"
     if not os.path.exists(password_file_name):

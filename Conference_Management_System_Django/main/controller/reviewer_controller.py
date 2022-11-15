@@ -71,7 +71,7 @@ def reviewer_BidPaper(request):
 
             bidExists, bid = models.Bids.does_bid_exist(reviewer.user_id, paper_id)
             if not bidExists:
-                bid = models.Bids.objects.create(reviewer_user_id=reviewer, paper_id=paper_id)
+                bid = models.Bids.objects.create(reviewer_user_id=reviewer, paper_id=paper)
             else:
                 bid.toggle_reviewer_bid()
             
