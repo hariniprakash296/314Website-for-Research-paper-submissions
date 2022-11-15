@@ -38,13 +38,13 @@ class Reviewer(User):
     def get_currently_reviewing_count(self):
         currently_reviewing_count = 0
         try:
-            currently_reviewing = models.Reviews.objects.get(reviewer_user_id=self.user_id, reviewer_rating=models.Reviews.Rating.UNRATED)
+            currently_reviewing = Reviews.objects.filter(reviewer_user_id__user_id=self.user_id, reviewer_rating=models.Reviews.Rating.UNRATED)
 
             if type(currently_reviewing) is list:
                 currently_reviewing_count = len(currently_reviewing)
             else:
                 currently_reviewing_count = 1
-        except models.Reviews.DoesNotExist as e:
+        except Reviews.DoesNotExist as e:
             currently_reviewing_count = 0
 
         return currently_reviewing_count
@@ -54,7 +54,7 @@ class Reviewer(User):
 
     def is_reviewer_of_paper(self, paper_id):
         try:
-            reviews = models.Reviews.objects.get(reviewer_user_id=self.user_id, paper_id=paper_id)
+            reviews = Reviews.objects.get(reviewer_user_id=self.user_id, paper_id=paper_id)
             return True
         except models.Reviews.DoesNotExist as e:
             return False
@@ -70,11 +70,11 @@ class Author(User):
         authors = list()
 
         try:
-            writes = models.Writes.objects.get(paper_id=paper_id)
+            writes = Writes.objects.filter(paper_id=paper_id)
             for write in writes:
-                author = models.Author.objects.get(user_id=write.author_user_id)
+                author = write.author_user_id
                 authors.append(author)
-        except models.Writes.DoesNotExist as e:
+        except Writes.DoesNotExist as e:
             #no authors for specified paper id
             print(e)
 
@@ -110,9 +110,9 @@ class Bids(models.Model):
     @staticmethod
     def does_bid_exist(reviewer_user_id, paper_id):
         try:
-            bid = models.Bids.objects.get(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
+            bid = Bids.objects.get(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
             return (True, bid)
-        except models.Bids.DoesNotExist as e:
+        except Bids.DoesNotExist as e:
             return (False, None)
 
     @staticmethod
@@ -145,6 +145,13 @@ class Reviews(models.Model):
     reviewer_rating = models.IntegerField(null=False, choices=Rating.choices, default=Rating.UNRATED)  
     author_rating = models.IntegerField(null=False, choices=Rating.choices, default=Rating.UNRATED)     
     
+    @staticmethod
+    def does_review_exist(reviewer_user_id, paper_id):
+        try:
+            review = Reviews.objects.get(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
+            return (True, review)
+        except Bids.DoesNotExist as e:
+            return (False, None)
 
 class ReviewComments(models.Model):
     comment_id = models.AutoField(null=False, primary_key=True)

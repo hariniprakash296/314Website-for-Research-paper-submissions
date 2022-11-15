@@ -3,15 +3,18 @@
 {% load static %}
 {% block content %}
 <div id="myForm" style="font-family: Brush Script MT;">
-    <table style="font-family: Brush Script MT; font-size: 2rem;">
-    <tr>
-        <td style="text-align: center">
-        <label>Author Emails:</label><br />
-                <textarea id="message" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10; For eg. authorA@gmail.com, authorB@gmail.com"></textarea>
-                <span style="color: red;" id="textRequired"></span>
-        <br/>
-        </td>
-    </tr>
-    </table>
-    <div id="user_buttons"> <a href="author_start_new_paper" style="color: aliceblue;">Create</a> </div>
+    <form action="author_StartNewPaper" method="post" id="StartNewPaper">
+        {% csrf_token %}
+        <table style="font-family: Brush Script MT; font-size: 2rem;">
+            <tr>
+                <td style="text-align: center">
+                <label>Author Emails:</label><br />
+                        <textarea form="StartNewPaper" name="author_emails" id="message" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"></textarea>
+                        <span style="color: red;" id="textRequired"></span>
+                <br/>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" id="user_buttons" style="color: aliceblue;" value="Create">
+    </form>
 {% endblock content %}

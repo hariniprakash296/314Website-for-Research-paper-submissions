@@ -29,7 +29,7 @@ def create_login_cookies(response,email,hashed_password,non_hashed_user_type):
     response.set_cookie(key="user_type", value=hashed_user_type, max_age=max_age, expires=expires)
 	
 #view funcs	
-def index(request):
+def index(request, message=None):
     islogged_in = controller_util.check_login(request)
     is_admin_logged_in = controller_util.check_type_login(request, models.User.UserType.USERTYPE_SYSTEMADMIN)
 
@@ -53,8 +53,13 @@ def index(request):
     else:
         template_name = "index.html"
 
-    print("Using template: "+template_name)
-    return render(request,template_name,{"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')})
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":is_admin_logged_in,"user_type":request.COOKIES.get('user_type')}
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
+    #print("Using template: "+template_name)
+    return render(request,template_name,context)
 	
 def login(request):
     islogged_in = False
@@ -122,11 +127,18 @@ def logout_handle(request):
 
 def emergency_manual_method(request):
     # call via "http://127.0.0.1:8000/emergency_manual_method?user_id="
-    if request.method == "GET":
-        try:
-            user_id = request.GET.get('user_id')
-            user = models.User.objects.get(user_id=user_id)
-            user.delete()
-        except Exception as e:
-            print(e)
-        return index(request)
+    # if request.method == "GET":
+    #     try:
+    #         user_id = request.GET.get('user_id')
+    #         user = models.User.objects.get(user_id=user_id)
+    #         user.delete()
+    #     except Exception as e:
+    #         print(e)
+    #     return index(request)
+    
+    email = "someauthor@gmail.com"
+    author = models.Author.objects.get()
+    authors = list(author)
+    print(authors)
+
+    return index(request, "")

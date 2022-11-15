@@ -40,7 +40,7 @@ def reviewer_list_biddable_papers(request, message=None):
     if not (islogged_in and is_author_logged_in):
         return reviewer_error_handle(request)
 
-    biddable_papers = models.Paper.objects.get(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
+    biddable_papers = models.Paper.objects.filter(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
     
     email = request.COOKIES.get('email')
     reviewer = models.Reviewer.objects.get(login_email=email)
@@ -71,7 +71,7 @@ def reviewer_BidPaper(request):
 
             bidExists, bid = models.Bids.does_bid_exist(reviewer.user_id, paper_id)
             if not bidExists:
-                bid = models.Bids.objects.create(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+                bid = models.Bids.objects.create(reviewer_user_id=reviewer, paper_id=paper_id)
             else:
                 bid.toggle_reviewer_bid()
             
@@ -98,10 +98,10 @@ def reviewer_list_reviewed_papers(request, message=None):
     email = request.COOKIES.get('email')
     reviewer = models.Reviewer.objects.get(login_email=email)
 
-    all_reviews = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, reviewer_rating=models.Reviews.Rating.UNRATED)
+    all_reviews = models.Reviews.objects.filter(reviewer_user_id=reviewer, reviewer_rating=models.Reviews.Rating.UNRATED)
     reviewed_papers = list()
-    for reviews in all_reviews:
-        paper = models.Paper.objects.get(paper_id=reviews.paper_id)
+    for review in all_reviews:
+        paper = review.paper_id
         reviewed_papers.append(paper)
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers.reverse()}
@@ -165,16 +165,16 @@ def reviewer_give_review(request, message=None):
             return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
 
         context["authors"] = models.Author.get_all_authors_of_paper(paper_id)
-
-        paper = models.Paper.objects.get(paper_id=paper_id)
-        context["selected_paper"] = paper
         
-        review = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
         
         if review.reviewer_rating != models.Reviews.Rating.UNRATED:
             return reviewer_list_reviewed_papers(request, "You have already reviewed the paper.")
 
         context["review"] = review
+
+        paper = review.paper_id
+        context["selected_paper"] = paper
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -202,7 +202,7 @@ def reviewer_SaveReview(request):
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
 
-        review = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
         review.review_details = request.POST.get('new_details')
         review.save()
@@ -229,7 +229,7 @@ def reviewer_GiveRating(request):
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
 
-        review = models.Reviews.objects.get(reviewer_user_id=reviewer.user_id, paper_id=paper_id)
+        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
         review.review_details = request.POST.get('new_details')
         review.reviewer_rating = int(request.POST.get('rating'))
