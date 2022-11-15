@@ -30,7 +30,7 @@ def check_conferencechair_login(request):
     return controller_util.check_type_login(request, models.User.UserType.USERTYPE_CONFERENCECHAIR)
 
 #view papers that have been submitted
-def conferencechair_view_all_papers(request):
+def conferencechair_view_submitted_papers(request):
     #requires: none
     #returns: paperstatus_dict = dictionary of all the paper status labels, key = int, val = string
     #returns: papers = list of all the papers

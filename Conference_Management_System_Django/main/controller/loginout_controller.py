@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.shortcuts import redirect
 from main.controller import controller_util
+import random
 
 email_lock = Lock()
 
@@ -68,8 +69,8 @@ def login(request):
 
 def login_ValidateInfo(request):
     if request.method == "POST":
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        email = request.POST.get('email').strip().lower()
+        password = request.POST.get('password').strip()
         
         password = password.encode('utf-8')
         hashed_password = hashlib.sha224(password).hexdigest()
@@ -134,11 +135,55 @@ def emergency_manual_method(request):
     #         user.delete()
     #     except Exception as e:
     #         print(e)
-    #     return index(request)
+
+    return index(request)
+
+def create_users():
+    print(os.getcwd())
+    password_file_name = "../namelist.txt"
+    if not os.path.exists(password_file_name):
+        raise Exception("Password file does not exist.")
+    fr = open(password_file_name, "r")
+    string_names = fr.read().splitlines()
+    fr.close()
+    #return index(request)
+
+    string_names = list(set(string_names))
+
+    user_type_choices = range(models.User.UserType.USERTYPE_SYSTEMADMIN, models.User.UserType.USERTYPE_AUTHOR+1)
+        
+    for i in range(120):
+        string_name = string_names[i]
     
-    email = "someauthor@gmail.com"
-    author = models.Author.objects.get()
-    authors = list(author)
-    print(authors)
+        name = string_name.split(",")[0]
+
+        user_type = random.choice(user_type_choices)
+        email = name.lower()+"@gmail.com"
+        password = "password".encode('utf-8')
+        max_papers = random.randint(5,10)
+
+        hashed_password = hashlib.sha224(password).hexdigest()
+        try:
+            user = models.User.objects.get(login_email=email)
+            continue
+
+        except models.User.DoesNotExist as e:
+            print("creating "+str(user_type))
+            if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
+                #0 = system admin
+                models.SystemAdmin.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_SYSTEMADMIN)
+                
+            elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
+                #1 = conference chair
+                models.ConferenceChair.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_CONFERENCECHAIR)
+                
+            elif user_type == models.User.UserType.USERTYPE_REVIEWER:
+                #2 = reviewer
+                models.Reviewer.objects.create(login_email=email, login_pw=hashed_password, name=name, max_papers=max_papers, user_type=models.User.UserType.USERTYPE_REVIEWER)
+                
+            elif user_type == models.User.UserType.USERTYPE_AUTHOR:
+                #3 = author
+                models.Author.objects.create(login_email=email, login_pw=hashed_password, name=name, user_type=models.User.UserType.USERTYPE_AUTHOR)
 
     return index(request, "")
+

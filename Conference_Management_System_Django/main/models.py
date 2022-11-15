@@ -91,7 +91,7 @@ class Paper(models.Model):
         PAPERSTATUS_SUBMITTEDACCEPTED = 3,  _("Submitted, and Accepted")
 
     paper_id = models.AutoField(null=False, primary_key=True)
-    paper_name = models.TextField(null=False, default="")
+    paper_name = models.TextField(null=False, default="No Title")
     paper_details = models.TextField(null=False, default="")
     status = models.IntegerField(null=False, choices=PaperStatus.choices, default=PaperStatus.PAPERSTATUS_NOTSUBMITTED)
     

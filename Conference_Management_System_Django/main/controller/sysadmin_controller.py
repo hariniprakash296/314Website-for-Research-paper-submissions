@@ -47,7 +47,7 @@ def admin_AddUserProfile(request):
     if request.method == "POST":
         # TODO add form checks here or in html as javascript
         user_type = request.POST.get('user_type')
-        email = request.POST.get('email').strip()
+        email = request.POST.get('email').strip().lower()
         password = request.POST.get('password').strip().encode('utf-8')
         name = request.POST.get('name').strip()
         max_papers = request.POST.get('max_papers')
