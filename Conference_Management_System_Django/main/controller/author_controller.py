@@ -81,6 +81,8 @@ def author_StartNewPaper(request):
 def author_list_papers(request, message=None):
     #requires: nothing
     #returns: authored_papers = list of all the papers that user is listed as author of
+    #return: paperstatus_dict
+
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
@@ -99,8 +101,14 @@ def author_list_papers(request, message=None):
     except models.Writes.DoesNotExist as e:
         print("No written papers.")
 
+    
+    paperstatus_dict = dict()
+    for key, value in models.Paper.PaperStatus.choices:
+        paperstatus_dict[key] = value
+
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
 
+    context['paperstatus_dict'] = paperstatus_dict
     if message != None and not "message" in context:
         context["message"] = message
 
@@ -109,6 +117,8 @@ def author_list_papers(request, message=None):
 def author_view_paper(request, message=None):
     #requires: paper_id = id of selected paper
     #returns: selected_paper = all the details of the paper that the user selected
+    #returns: author_emails_string = string of all the emails joined
+
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
 
@@ -126,8 +136,19 @@ def author_view_paper(request, message=None):
             writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author)
             paper = writes.paper_id
             context["selected_paper"] = paper
+
+            print(paper.paper_details)
+
         except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper")
+
+        writes = models.Writes.objects.filter(paper_id=paper_id)
+        author_emails = list()
+        for write in writes:
+            author_emails.append(write.author_user_id.login_email)
+
+    context['author_emails_string'] = ",".join(author_emails)
+    print(context['author_emails_string'])
 
     if message != None and not "message" in context:
         context["message"] = message

@@ -1,0 +1,44 @@
+{%extends "upper_menu.html" %}
+{% load static %}
+{% load template_extras %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+<div class="background">
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+<div>
+    <table cellspacing="10">
+        <tr>
+            <th>
+                Paper Name
+            </th>
+            <th>
+                Your Current Bid
+            </th>
+            <th>
+                Change Bid
+            </th>
+
+        </tr>
+        {% for paper in biddable_papers%}
+                <tr>
+                    <form action="reviewer_BidPaper" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                        <td>
+                            {{ paper.paper_name }}
+                        </td>
+                        <td>
+                            <input type="checkbox" {% if bids_additional_info|access_dict:paper.paper_id %} checked {% endif %} disabled>
+                        </td>
+                        <td>
+                            
+                            <input type="submit" value={% if bids_additional_info|access_dict:paper.paper_id %} "Remove bid" {% else %} "Add bid" {% endif %}>
+                        </td>
+                    </form>
+                </tr>
+        {% endfor %}
+    </table>
+</div>
+</span>
+{% endblock %}
+</div>

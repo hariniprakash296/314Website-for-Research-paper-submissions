@@ -8,26 +8,27 @@
     <div id="myForm" style="font-family: Brush Script MT;">
         <form action="" method="post" id="EditPaper">
             {% csrf_token %}
-            <input type="hidden" name="user_id" value = {{selected_paper.paper_id}}>
+            <input type="hidden" name="paper_id" value = {{selected_paper.paper_id}}>
             <table style="font-family: Brush Script MT; font-size: 2rem;">
                 <tr>
                     <td>
                         Paper Title:
-                        <input type="text" id="demo" name="new_name" size="30" value={{selected_paper.paper_name}}> 
+                        <input type="text" id="demo" name="new_name" size="30" value={{ selected_paper.paper_name }}> 
                     </td>
                 </tr>
                 <tr>
                     <td style="text-align: center">
                     <label>Author Emails:</label><br />
-                            <textarea readonly form="EditPaper" name="author_emails" id="message" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"></textarea>
+                            <textarea readonly form="EditPaper" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
+                                >{{ author_emails_string }}</textarea>
                             <span style="color: red;" id="textRequired"></span>
                     <br/>
                     </td>
                 </tr>
                 <tr>
                     <td style="text-align: center">
-                            <textarea form="EditPaper" name="new_details" id="message" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your paper details."
-                                value={{selected_paper.paper_details}}></textarea>
+                            <textarea form="EditPaper" name="new_details" id="message2" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your paper details."
+                                >{{ selected_paper.paper_details }}</textarea>
                             <span style="color: red;" id="textRequired"></span>
                     <br/>
                     </td>
