@@ -14,6 +14,8 @@
             <br>
             <input type="text" placeholder="your name" name="new_name" value={{selected_user.name}}>
             <br>
+            <input type="text" placeholder="max papers (for reviewers only)" name="new_name" value={% if selected_user.user_type == 2 %} {{selected_user.max_papers}} {% endif %}>
+            <br>
             <input type="radio" name="new_user_type" value="admin" {% if selected_user.user_type == 0 %} checked {% endif %}>System Admin
             <br>
             <input type="radio" name="new_user_type" value="chair" {% if selected_user.user_type == 1 %} checked {% endif %}>Chair
