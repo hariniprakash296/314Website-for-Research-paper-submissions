@@ -24,6 +24,7 @@ urlpatterns = [
     path('author_list_papers', author_controller.author_list_papers, name='list_papers'),
     path('author_view_paper', author_controller.author_view_paper, name='view_paper'),
     path('author_SavePaper', author_controller.author_SavePaper, name='save_paper'),
+    path('author_SubmitPaper', author_controller.author_SubmitPaper, name='submit_paper'),
 
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
 

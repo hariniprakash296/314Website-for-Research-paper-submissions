@@ -136,6 +136,8 @@ def author_view_paper(request, message=None):
 
 def author_SavePaper(request):
     #requires: paper_id = id of selected paper
+    #requires: new_name = name of selected paper
+    #requires: new_details = details of selected paper
     #returns: selected_paper = all the details of the paper that the user selected
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
