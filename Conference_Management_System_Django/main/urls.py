@@ -34,7 +34,7 @@ urlpatterns = [
     path('reviewer_SaveReview', reviewer_controller.reviewer_SaveReview, name='reviewer_SaveReview'),
     path('reviewer_GiveRating', reviewer_controller.reviewer_GiveRating, name='reviewer_GiveRating'),
     
-    path('conferencechair_view_all_papers', conferencechair_controller.conferencechair_view_submitted_papers, name='conferencechair_view_all_papers'),
+    path('conferencechair_view_submitted_papers', conferencechair_controller.conferencechair_view_submitted_papers, name='conferencechair_view_submitted_papers'),
     path('conferencechair_view_reviewers', conferencechair_controller.conferencechair_view_reviewers, name='conferencechair_view_reviewers'),
     path('conferencechair_AllocatePaper', conferencechair_controller.conferencechair_AllocatePaper, name='conferencechair_AllocatePaper'),
     path('conferencechair_view_reviewed_papers', conferencechair_controller.conferencechair_view_reviewed_papers, name='conferencechair_view_reviewed_papers'),
