@@ -1,0 +1,32 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+    <table cellspacing="10" width="100%">
+        <tr>
+            <th>
+                Paper Title
+            </th>
+            <th>
+                Select
+            </th>
+        </tr>
+        {% for user in users%}
+        <tr>
+            <form action="list_papers" method="post">
+                {% csrf_token %}                
+                <input type="hidden" name="user_id" value = {{user.user_id}}>
+                        <td>
+                            {{ author.authored_papers }}
+                        </td>
+                        <td>
+                            <input type="radio" value="Select paper"
+                        </td>
+            </form>
+        </tr>
+        {% endfor %}
+</span>
+{% endblock content %}

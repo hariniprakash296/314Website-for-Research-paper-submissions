@@ -1,14 +1,15 @@
 .background{
     background-image: linear-gradient(to bottom right,rgb(250, 232, 176), #eac2fa, #a6fcff);
-    background-repeat: no-repeat, repeat;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: center;
   }
 
   .user_button_group{
     display:flex;
     flex-direction: row;
     justify-content: space-around;
-    height : 300px;
-    width : 60%;
+    height : 3px;
     margin: auto;
     /* margin-right: auto;
     margin-left: auto;
@@ -17,16 +18,16 @@
 }
 #user_buttons{
     text-decoration: red;
-    padding: 10px;
+    padding: 1px;
     margin-top: 3px;
-    height: 30px;
+    height: 15px;
     font-family: 'Brush Script-MT';
     margin-right: 3px;
     border-color: blue;
     color: aliceblue;
     background-position: right bottom, left top; 
     background-image: linear-gradient(to bottom right, rgb(154, 11, 249),rgb(0, 234, 255));
-    border-radius: 10px;
+    border-radius: 2px;
     display:inline-block;
     margin: auto;
     /* margin-right: auto;
