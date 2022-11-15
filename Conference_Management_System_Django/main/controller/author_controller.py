@@ -149,6 +149,10 @@ def author_SavePaper(request):
         try:
             writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
             paper = models.Paper.objects.get(paper_id=paper_id)
+            
+            if paper.status != models.Paper.PaperStatus.PAPERSTATUS_NOTSUBMITTED:
+                return author_view_paper(request, "Error. Paper has already been submitted.")
+
             paper.paper_name = request.POST.get('new_name')
             paper.paper_details = request.POST.get('new_details')
             paper.save()
@@ -157,4 +161,31 @@ def author_SavePaper(request):
         except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper")
             
+def author_SubmitPaper(request):
+    #requires: paper_id = id of selected paper
+    #returns: selected_paper = all the details of the paper that the user selected
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_author_login(request)
 
+    if not (islogged_in and is_author_logged_in):
+        return author_error_handle(request)
+    
+    if request.method == "POST":
+        paper_id = request.POST.get('paper_id')
+        author = models.Author.objects.get(login_email=request.COOKIES.get('email'))
+
+        try:
+            writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
+            paper = models.Paper.objects.get(paper_id=paper_id)
+
+            if paper.status != models.Paper.PaperStatus.PAPERSTATUS_NOTSUBMITTED:
+                return author_view_paper(request, "Paper has already been submitted.")
+
+            paper.paper_name = request.POST.get('new_name')
+            paper.paper_details = request.POST.get('new_details')
+            paper.status = models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING
+            paper.save()
+
+            return author_view_paper(request, "Paper successfully submitted.")
+        except models.Writes.DoesNotExist as e:
+            return author_list_papers(request, "Not author of selected paper.")
