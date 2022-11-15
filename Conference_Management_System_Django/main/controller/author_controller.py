@@ -29,7 +29,7 @@ def author_error_handle(request):
 def check_author_login(request):
     return controller_util.check_type_login(request, models.User.UserType.USERTYPE_AUTHOR)
 
-def author_start_new_paper(request, message):
+def author_start_new_paper(request, message=None):
     #requires: nothing
     #returns: nothing
     islogged_in = controller_util.check_login(request)
@@ -89,11 +89,14 @@ def author_list_papers(request, message=None):
     email = request.COOKIES.get('email')
     author = models.Author.objects.get(login_email=email)
 
-    all_writes = models.Writes.objects.get(author_user_id=author.user_id)
     authored_papers = list()
-    for writes in all_writes:
-        paper = models.Paper.objects.get(paper_id=writes.paper_id)
-        authored_papers.append(paper)
+    try:
+        all_writes = models.Writes.objects.get(author_user_id=author.user_id)
+        for writes in all_writes:
+            paper = models.Paper.objects.get(paper_id=writes.paper_id)
+            authored_papers.append(paper)
+    except models.Writes.DoesNotExist as e:
+        print("No written papers.")
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
 
