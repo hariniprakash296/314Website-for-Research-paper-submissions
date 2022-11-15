@@ -41,6 +41,7 @@ urlpatterns = [
     path('conferencechair_view_reviewer_ratings', conferencechair_controller.conferencechair_view_reviewer_ratings, name='conferencechair_view_reviewer_ratings'),
     path('conferencechair_AcceptRejectPaper', conferencechair_controller.conferencechair_AcceptRejectPaper, name='conferencechair_AcceptRejectPaper'),
 
+    path('test_template', loginout_controller.test_template, name='test_template'),
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
 
     path('conferences',views.conferences, name="conferences"),

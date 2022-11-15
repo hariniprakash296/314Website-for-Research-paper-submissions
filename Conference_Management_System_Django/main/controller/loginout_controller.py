@@ -143,6 +143,14 @@ def emergency_manual_method(request):
 
     return index(request)
 
+def test_template(request):
+    # call via "http://127.0.0.1:8000/test_template"
+
+    template_name = "login.html"
+
+    return render(request,template_name,{"islogged_in":False, 'message':'Bad Authentication.', "is_admin_logged_in":False
+                                                , "user_type":request.COOKIES.get('user_type')})
+
 def create_users(request):
     print(os.getcwd())
     password_file_name = "../namelist.txt"
