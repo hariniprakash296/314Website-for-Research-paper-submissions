@@ -5,7 +5,7 @@
 
 {% block content %}
 <span style="font-size: 1.5rem; font-family: sans-serif;">
-    <table cellspacing="10" width="100%">
+    <table cellspacing="10" width="100%" border="1px solid"; border-color: "white" >
         <tr>
             <th>
                 Paper Title
@@ -14,19 +14,28 @@
                 Select
             </th>
         </tr>
-        {% for user in users%}
+        {% for paper in authored_papers%}
         <tr>
             <form action="list_papers" method="post">
                 {% csrf_token %}                
-                <input type="hidden" name="user_id" value = {{user.user_id}}>
-                        <td>
-                            {{ author.authored_papers }}
-                        </td>
-                        <td>
-                            <input type="radio" value="Select paper"
-                        </td>
+                <input type="hidden" name="author_emails" value = {{paper.paper_id}}>
+                        <tr>
+                            <td>
+                                {{ paper.paper_name }}
+                            </td>
+                                <td>
+                                    Select Paper<input type="radio" value="Select paper" style="align: center;">
+                                </td>
+                        </tr>
+                        
             </form>
         </tr>
         {% endfor %}
+    </table>
+
+    <div class="user_button_group">
+        <div id="user_buttons"> <a href="save_paper" style="color: aliceblue; font-family: 'Brush Script-MT'; border-radius: 25px;">Save</a> </div>
+        <div id="user_buttons" > <a href="author_SubmitPaper" style="color: aliceblue; font-family: 'Brush Script-MT'; border-radius: 25px;">Submit</a> </div>
+    </div>
 </span>
 {% endblock content %}
