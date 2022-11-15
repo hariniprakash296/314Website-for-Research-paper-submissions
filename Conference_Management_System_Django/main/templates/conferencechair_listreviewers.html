@@ -1,0 +1,21 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+Selected Paper:
+<table>
+    <tr>
+        <th>Allocate Papers</th>
+    </tr>
+    <tr>
+        <th>Options</th>
+    </tr>
+    {% for paper in authored_papers%}
+    <tr>
+        <td></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock content %}
