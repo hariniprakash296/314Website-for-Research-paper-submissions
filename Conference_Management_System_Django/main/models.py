@@ -127,6 +127,18 @@ class Writes(models.Model):
     author_user_id = models.ForeignKey('User', on_delete=models.CASCADE)
     paper_id = models.ForeignKey('Paper', on_delete=models.CASCADE)
 
+    @staticmethod
+    def get_names_of_authors(paper_id):
+        try:
+            writes = Writes.objects.filter(paper_id=paper_id)
+            author_names = list()
+            for write in writes:
+                author_names.append(write.author_user_id.name)
+
+            return ",".join(author_names)
+        except Writes.DoesNotExist as e:
+            return ""
+
 class Reviews(models.Model):
     class Rating(models.IntegerChoices):
         UNRATED = -5,       _("Unrated")

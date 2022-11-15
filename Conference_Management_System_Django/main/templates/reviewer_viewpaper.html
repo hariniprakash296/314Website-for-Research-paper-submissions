@@ -1,0 +1,42 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+    <div id="myForm" style="font-family: Brush Script MT;">
+        <form action="" method="post" id="EditPaper">
+            {% csrf_token %}
+            <input type="hidden" name="paper_id" value = {{selected_paper.paper_id}}>
+            <table style="font-family: Brush Script MT; font-size: 2rem;">
+                <tr>
+                    <td>
+                        Paper Title:
+                        <input readonly type="text" id="demo" name="new_name" size="30" value={{ selected_paper.paper_name }}> 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center">
+                    <label>Authors:</label><br />
+                            <textarea readonly form="EditPaper" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
+                                >{{ author_name_string }}</textarea>
+                            <span style="color: red;" id="textRequired"></span>
+                    <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center">
+                            <textarea readonly form="EditPaper" name="new_details" id="message2" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your paper details."
+                                >{{ selected_paper.paper_details }}</textarea>
+                            <span style="color: red;" id="textRequired"></span>
+                    <br/>
+                    </td>
+                </tr>
+            </table>
+            
+            <input type="submit" id="user_buttons" style="color: aliceblue;" value="Review Paper" formaction="reviewer_give_review">
+        </form>
+    </div>
+</span>
+{% endblock content %}

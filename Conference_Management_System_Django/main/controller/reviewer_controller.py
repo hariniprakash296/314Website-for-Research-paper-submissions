@@ -114,7 +114,9 @@ def reviewer_list_reviewed_papers(request, message=None):
 def reviewer_view_paper(request, message=None):
     #requires: paper_id = id of selected paper
     #returns: selected_paper = all the details of the paper that the user selected
-    #returns: authors = all the authors of the selected paper
+    #returns: author_name_string = names of all the authors of the selected paper
+    #return: reviewrating_dict
+
     islogged_in = controller_util.check_login(request)
     is_reviewer_logged_in = check_reviewer_login(request)
 
@@ -132,10 +134,15 @@ def reviewer_view_paper(request, message=None):
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
 
-        context["authors"] = models.Author.get_all_authors_of_paper(paper_id)
+        context['author_name_string'] = models.Writes.get_names_of_authors(paper_id)
 
         paper = models.Paper.objects.get(paper_id=paper_id)
         context["selected_paper"] = paper
+        
+    reviewrating_dict = dict()
+    for key, value in models.Reviews.Rating.choices:
+        reviewrating_dict[key] = value
+    context["reviewrating_dict"] = reviewrating_dict
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -179,7 +186,7 @@ def reviewer_give_review(request, message=None):
     if message != None and not "message" in context:
         context["message"] = message
 
-    return render(request,"reviewer_viewpaper.html", context)
+    return render(request,"reviewer_viewreview.html", context)
 
 def reviewer_SaveReview(request):
     #requires: paper_id = id of selected paper
@@ -230,9 +237,16 @@ def reviewer_GiveRating(request):
             return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
 
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
-
+            
         review.review_details = request.POST.get('new_details')
-        review.reviewer_rating = int(request.POST.get('rating'))
+        review.save()
+
+        rating = int(request.POST.get('rating'))
+
+        if rating == models.Reviews.Rating.UNRATED:
+            return reviewer_view_paper(request, "Please select a rating to give the paper.")
+
+        review.reviewer_rating = rating
         review.save()
 
     return reviewer_list_reviewed_papers(request, "Successfully submitted your review.")
