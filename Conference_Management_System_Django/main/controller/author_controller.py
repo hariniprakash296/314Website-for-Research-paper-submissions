@@ -68,12 +68,13 @@ def author_StartNewPaper(request):
                 author = models.Author.objects.get(login_email=email)
                 author_list.append(author)
             except models.Author.DoesNotExist as e:
-                return author_start_new_paper(request, "Author account with the specified email does not exist.")
+                return author_start_new_paper(request, "Author account with the email '"+email+"' does not exist.")
 
         new_paper = models.Paper.objects.create()
 
         for author in author_list:
-            models.Authors.objects.create(author_user_id=author.user_id, paper_id=new_paper.paper_id)
+            #models.Authors.objects.create(author_user_id=author.user_id, paper_id=new_paper.paper_id)
+            models.Writes.objects.create(author_user_id=author, paper_id=new_paper)
 
         return author_start_new_paper(request, "Paper successfully created.")
 
@@ -91,10 +92,10 @@ def author_list_papers(request, message=None):
 
     authored_papers = list()
     try:
-        all_writes = models.Writes.objects.get(author_user_id=author.user_id)
+        all_writes = models.Writes.objects.filter(author_user_id=author.user_id)
+
         for writes in all_writes:
-            paper = models.Paper.objects.get(paper_id=writes.paper_id)
-            authored_papers.append(paper)
+            authored_papers.append(writes.paper_id)
     except models.Writes.DoesNotExist as e:
         print("No written papers.")
 
@@ -122,8 +123,8 @@ def author_view_paper(request, message=None):
         author = models.Author.objects.get(login_email=request.COOKIES.get('email'))
 
         try:
-            writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
-            paper = models.Paper.objects.get(paper_id=paper_id)
+            writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author)
+            paper = writes.paper_id
             context["selected_paper"] = paper
         except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper")
@@ -148,7 +149,7 @@ def author_SavePaper(request):
 
         try:
             writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
-            paper = models.Paper.objects.get(paper_id=paper_id)
+            paper = writes.paper_id
             
             if paper.status != models.Paper.PaperStatus.PAPERSTATUS_NOTSUBMITTED:
                 return author_view_paper(request, "Error. Paper has already been submitted.")
@@ -176,7 +177,7 @@ def author_SubmitPaper(request):
 
         try:
             writes = models.Writes.objects.get(paper_id=paper_id, author_user_id=author.user_id)
-            paper = models.Paper.objects.get(paper_id=paper_id)
+            paper = writes.paper_id
 
             if paper.status != models.Paper.PaperStatus.PAPERSTATUS_NOTSUBMITTED:
                 return author_view_paper(request, "Paper has already been submitted.")
