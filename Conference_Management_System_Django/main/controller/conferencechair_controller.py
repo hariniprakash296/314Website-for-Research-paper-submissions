@@ -152,7 +152,7 @@ def conferencechair_AllocatePaper(request):
             if reviewer.is_reviewer_of_paper(paper_id):
                 return conferencechair_view_reviewers(request, "Error. Reviewer has already been allocated the selected paper.")
 
-            models.Reviews.objects.create(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
+            models.Reviews.objects.create(reviewer_user_id=reviewer, paper_id=paper)
 
             return conferencechair_view_reviewers(request, "Paper successfully allocated to reviewer.")
 
@@ -175,25 +175,25 @@ def conferencechair_view_reviewed_papers(request, message=None):
     fully_reviewed_papers = list()
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
 
-    try:
-        papers = models.Paper.objects.filter(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
+    papers = models.Paper.objects.filter(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
 
-        for paper in papers:
-            paper_id = paper.paper_id
+    for paper in papers:
+        paper_id = paper.paper_id
 
-            fully_reviewed = True
-            try:
-                reviews = models.Reviews.objects.filter(paper_id=paper_id)
-                for review in reviews:
-                    if review.reviewer_rating == models.Reviews.Rating.UNRATED:
-                        fully_reviewed = False
-                        break
-            except models.Reviews.DoesNotExist as e:
-                fully_reviewed = False
+        fully_reviewed = True
+        reviews = models.Reviews.objects.filter(paper_id=paper_id)
 
-            if fully_reviewed:
-                fully_reviewed_papers.append(paper)
-    except models.Paper.DoesNotExist as e:
+        if len(reviews) == 0:
+            fully_reviewed = False
+        else:
+            for review in reviews:
+                if review.reviewer_rating == models.Reviews.Rating.UNRATED:
+                    fully_reviewed = False
+                    break
+
+        if fully_reviewed:
+            fully_reviewed_papers.append(paper)
+    if len(fully_reviewed_papers) == 0:
         context["message"] = "There are no submitted papers that have been fully reviewed by their allocated reviewers."
 
     context["fully_reviewed_papers"] = fully_reviewed_papers
