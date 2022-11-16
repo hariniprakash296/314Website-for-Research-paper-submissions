@@ -4,13 +4,19 @@
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
-Selected Paper:
-<table>
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+<table  cellspacing="10" width="100%">
     <tr>
-        <th>Allocate Papers</th>
+        <th>Reviewer Name:</th>
+        <th>Bid:</th>
+        <th>Papers:</th>
+        <th>Allocate:</th>
     </tr>
     <tr>
-        <th>Options</th>
+        <th>Jyotsna</th>
+        <th>Yes</th>
+        <th>Thesis on the black hole theory</th>
+        <th>Sarah</th>
     </tr>
     {% for paper in authored_papers%}
     <tr>
