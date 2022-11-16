@@ -92,7 +92,11 @@ class Paper(models.Model):
     paper_details = models.TextField(null=False, default="")
     status = models.IntegerField(null=False, choices=PaperStatus.choices, default=PaperStatus.PAPERSTATUS_NOTSUBMITTED)
     
-    
+    def is_paper_fully_reviewed(self):
+        reviews = Reviews.objects.filter(paper_id=self)
+        unrated_reviews = reviews.filter(reviewer_rating=Reviews.Rating.UNRATED)
+        completed_reviews = reviews.exclude(reviewer_rating=Reviews.Rating.UNRATED)
+        return (len(unrated_reviews) == 0 and len(reviews) == len(completed_reviews) and len(reviews) > 0)
     
 #relationships
 class Bids(models.Model):

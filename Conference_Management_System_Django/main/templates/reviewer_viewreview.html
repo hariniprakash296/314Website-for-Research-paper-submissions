@@ -1,6 +1,7 @@
 {%extends "upper_menu.html" %}
 
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
@@ -20,14 +21,14 @@
                     <td style="text-align: center">
                     <label>Authors:</label><br />
                             <textarea readonly form="EditReview" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
-                                >{{ author_name_string }}</textarea>
+                                >{{ authors }}</textarea>
                             <span style="color: red;" id="textRequired"></span>
                     <br/>
                     </td>
                 </tr>
                 <tr>
                     <td style="text-align: center">
-                            <textarea form="EditReview" name="new_details" id="message2" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your paper details."
+                            <textarea form="EditReview" name="new_details" id="message2" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your review details."
                                 >{{ review.review_details }}</textarea>
                             <span style="color: red;" id="textRequired"></span>
                     <br/>
@@ -37,8 +38,8 @@
                     <td style="text-align: center">
                         <label>Rating: </label>
                         <select name="rating" id="rating">
-                            {% for key, val in %}
-                                <option value={{ key }} selected>{{ val }}</option>
+                            {% for key in reviewrating_dict %}
+                                <option value={{ key }} selected>{{ reviewrating_dict|access_dict:key }}</option>
                             {% endfor %}
                         </select>
                         

@@ -116,6 +116,7 @@ def commentor_view_reviews(request, message=None):
         context['paper'] = paper
         context['reviews'] = reviews
         context['reviewcomment_count'] = reviewcomment_count
+        context["authors"] = models.Writes.get_names_of_authors(paper.paper_id)
 
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:
@@ -156,6 +157,8 @@ def commentor_view_review_comments(request, message=None):
         context['paper'] = paper
         context['review'] = review
         context['reviewcomments'] = reviewcomments
+        context["authors"] = models.Writes.get_names_of_authors(paper.paper_id)
+
         
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:
@@ -191,6 +194,7 @@ def commentor_add_comment(request):
 
         context['paper'] = paper
         context['review'] = review
+        context["authors"] = models.Writes.get_names_of_authors(paper.paper_id)
         
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:
@@ -217,8 +221,9 @@ def commentor_AddComment(request):
   
     if request.method == "POST":
         review_id = request.POST.get('review_id')
+        comment_text = request.POST.get('comment_text')
         
         review = models.Reviews.objects.get(review_id=review_id)
-        models.ReviewComments.objects.create(review_id=review, commenter_user_id=user, comment_text=request.POST.get('comment_text'))
+        models.ReviewComments.objects.create(review_id=review, commenter_user_id=user, comment_text=comment_text)
 
     return commentor_view_review_comments(request, "Your comment has been added.")

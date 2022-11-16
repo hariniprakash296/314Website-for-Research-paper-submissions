@@ -1,6 +1,7 @@
 {%extends "upper_menu.html" %}
 
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
@@ -8,24 +9,31 @@
     <div id="myForm" style="font-family: Brush Script MT;">
         <table style="font-family: Brush Script MT; font-size: 2rem;">
             <tr>
-                <td>
+                <td colspan="5">
                     Paper Title:
                     <input readonly type="text" id="demo" name="new_name" size="30" value={{ paper.paper_name }}> 
                 </td>
             </tr>
             <tr>
-                <td style="text-align: center">
+                <td style="text-align: center" colspan="5">
                 <label>Authors:</label><br />
                         <textarea readonly form="" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
-                            >{{ author_name_string }}</textarea>
+                            >{{ authors }}</textarea>
                         <span style="color: red;" id="textRequired"></span>
                 <br/>
                 </td>
             </tr>
+            <tr>
+                <td style="text-align: center" >Reviewer Name</td>
+                <td style="text-align: center" >Review</td>
+                <td style="text-align: center" >Rating</td>
+                <td style="text-align: center" >Comment Count</td>
+                <td style="text-align: center" >View</td>
+            </tr>
             {% for review in reviews %}
                 <form action="commentor_view_review_comments" method="post" id="ViewComments">
                     {% csrf_token %}
-                    <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                    <input type="hidden" name="review_id" value = {{review.review_id}}>
                     <tr>
                         <td style="text-align: center">
                             {{review.reviewer_user_id.name}}

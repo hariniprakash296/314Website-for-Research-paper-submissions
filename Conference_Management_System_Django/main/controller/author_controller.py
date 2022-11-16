@@ -92,6 +92,9 @@ def author_list_papers(request, message=None):
 
     email = request.COOKIES.get('email')
     author = models.Author.objects.get(login_email=email)
+    
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
 
     authored_papers = list()
     reviewed_authored_papers = dict()
@@ -102,19 +105,17 @@ def author_list_papers(request, message=None):
             paper = writes.paper_id
             authored_papers.append(writes.paper_id)
 
-            reviews = models.Reviews.objects.filter(paper_id=paper)
-            unrated_reviews = reviews.exclude(reviewer_rating=models.Reviews.Rating.UNRATED)
-            reviewed_authored_papers[paper.paper_id] = (len(unrated_reviews) == 0 and len(reviews) > 0)
+            reviewed_authored_papers[paper.paper_id] = paper.is_paper_fully_reviewed()
 
     except models.Writes.DoesNotExist as e:
         context["message"] = "No written papers."
 
+    context['authored_papers'] = authored_papers
+    context['reviewed_authored_papers'] = reviewed_authored_papers
     
     paperstatus_dict = dict()
     for key, value in models.Paper.PaperStatus.choices:
         paperstatus_dict[key] = value
-
-    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "authored_papers":authored_papers}
 
     context['paperstatus_dict'] = paperstatus_dict
     if message != None and not "message" in context:
@@ -237,6 +238,7 @@ def author_view_all_reviews(request, message=None):
         context["paper"] = paper
         reviews = models.Reviews.objects.filter(paper_id=paper_id)
         context["reviews"] = reviews
+        context["authors"] = models.Writes.get_names_of_authors(paper_id)
 
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:
@@ -264,6 +266,8 @@ def author_view_review(request, message=None):
         review_id = request.POST.get('review_id')
         review = models.Reviews.objects.get(review_id=review_id)
         context["review"] = review    
+        context["paper"] = review.paper_id
+        context["authors"] = models.Writes.get_names_of_authors(review.paper_id)
 
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:

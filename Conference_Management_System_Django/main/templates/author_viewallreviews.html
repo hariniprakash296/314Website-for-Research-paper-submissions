@@ -1,6 +1,7 @@
 {%extends "upper_menu.html" %}
 
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
@@ -17,7 +18,7 @@
             <td style="text-align: center">
             <label>Authors:</label><br />
                     <textarea readonly form="ViewAllReviews" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
-                        >{{ author_name_string }}</textarea>
+                        >{{ authors }}</textarea>
                     <span style="color: red;" id="textRequired"></span>
             <br/>
             </td>
@@ -43,7 +44,7 @@
         <tr>
             <form action="author_view_paper" method="post">
                 {% csrf_token %}                
-                <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                <input type="hidden" name="review_id" value = {{review.review_id}}>
                 <tr>
                     <td>
                         {{ review.reviewer_user_id.name }}

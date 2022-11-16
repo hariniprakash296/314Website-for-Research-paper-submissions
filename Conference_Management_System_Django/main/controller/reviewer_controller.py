@@ -103,8 +103,9 @@ def reviewer_list_unreviewed_papers(request, message=None):
     for review in all_reviews:
         paper = review.paper_id
         reviewed_papers.append(paper)
+    reviewed_papers.reverse()
 
-    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers.reverse()}
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers}
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -167,7 +168,7 @@ def reviewer_give_review(request, message=None):
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
 
-        context["authors"] = models.Author.get_all_authors_of_paper(paper_id)
+        context["authors"] = models.Writes.get_names_of_authors(paper_id)
         
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
         
@@ -215,7 +216,7 @@ def reviewer_SaveReview(request):
         review.review_details = request.POST.get('new_details')
         review.save()
 
-    return reviewer_view_paper(request, "Successfully saved editted review.")
+    return reviewer_give_review(request, "Successfully saved editted review.")
 
 def reviewer_GiveRating(request):
     #requires: paper_id = id of selected paper

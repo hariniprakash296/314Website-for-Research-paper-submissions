@@ -16,7 +16,7 @@
             </th>
 
         </tr>
-        {% for paper in reviewed_papers%}
+        {% for paper in reviewed_papers %}
                 <tr>
                     <form action="reviewer_view_paper" method="post">
                         {% csrf_token %}

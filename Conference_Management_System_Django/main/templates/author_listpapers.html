@@ -37,7 +37,8 @@
                         <input type="submit" id="user_buttons" style="color: aliceblue;" value="View Paper" formaction="author_view_paper">
                     </td>
                     <td>
-                        <input type="submit" {% if not reviewed_authored_papers|access_dict:paper.paper_id %} readonly {% endif %} id="user_buttons" style="color: aliceblue;" value="Submit Paper" formaction="author_view_all_reviews">
+                        {% if reviewed_authored_papers|access_dict:paper.paper_id %} <input type="submit" id="user_buttons" style="color: aliceblue;" value="View Reviews" formaction="author_view_all_reviews"> 
+                        {% else %} Paper is not yet reviewed {% endif %} 
                     </td>
                 </tr>
                         

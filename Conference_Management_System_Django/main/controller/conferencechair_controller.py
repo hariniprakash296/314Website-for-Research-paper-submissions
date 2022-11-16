@@ -198,6 +198,9 @@ def conferencechair_view_reviewed_papers(request, message=None):
 
     context["fully_reviewed_papers"] = fully_reviewed_papers
 
+    if message != None and not "message" in context:
+        context["message"] = message
+
     return render(request,"conferencechair_listreviewedpapers.html", context)
 
 def conferencechair_view_reviewer_ratings(request, message=None):
@@ -231,13 +234,17 @@ def conferencechair_view_reviewer_ratings(request, message=None):
 
         paper = models.Paper.objects.get(paper_id=paper_id)
         context["paper"] = paper
-        context["review"] = review
+        context["authors"] = models.Writes.get_names_of_authors(paper_id)
+        context["reviews"] = reviews
         context["reviewer"] = reviewer
     
     reviewrating_dict = dict()
     for key, value in models.Reviews.Rating.choices:
         reviewrating_dict[key] = value
     context["reviewrating_dict"] = reviewrating_dict
+    
+    if message != None and not "message" in context:
+        context["message"] = message
 
     return render(request,"conferencechair_viewreviewerreviews.html", context)
 
@@ -250,8 +257,6 @@ def conferencechair_AcceptPaper(request):
 
     if not (islogged_in and is_conferencechair_logged_in):
         return conferencechair_error_handle(request)
-
-    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
@@ -276,8 +281,6 @@ def conferencechair_RejectPaper(request):
 
     if not (islogged_in and is_conferencechair_logged_in):
         return conferencechair_error_handle(request)
-
-    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
