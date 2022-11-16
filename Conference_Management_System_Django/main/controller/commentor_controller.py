@@ -129,6 +129,7 @@ def commentor_view_reviews(request, message=None):
 
 def commentor_view_review_comments(request, message=None):
     #requires: review_id = id of the selected review
+    #returns: paper = selected paper
     #returns: review = selected review
     #returns: reviewcomments = list of comments of the selected review
     #returns: reviewrating_dict = dict of the ratings' labels
@@ -164,9 +165,9 @@ def commentor_view_review_comments(request, message=None):
     if message != None and not "message" in context:
         context["message"] = message
 
-    return render(request,"commentor_viewreviewcommentss.html", context)
+    return render(request,"commentor_viewreviewcomments.html", context)
 
-def commentor_give_comment(request):
+def commentor_add_comment(request):
     #requires: review_id = id of the selected review
     #returns: review = selected review
     #returns: reviewrating_dict = dict of the ratings' labels
@@ -196,7 +197,7 @@ def commentor_give_comment(request):
         reviewrating_dict[key] = value
     context["reviewrating_dict"] = reviewrating_dict
 
-    return render(request,"commentor_viewreviewcommentss.html", context)
+    return render(request,"commentor_addcomment.html", context)
 
 def commentor_AddComment(request):
     #requires: review_id = id of the selected review

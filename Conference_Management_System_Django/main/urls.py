@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .controller import loginout_controller, sysadmin_controller, author_controller, reviewer_controller, conferencechair_controller
+from .controller import loginout_controller, sysadmin_controller, author_controller, reviewer_controller, conferencechair_controller, commentor_controller
 from . import views
 #from .controller import *
 from django.conf import settings
@@ -44,6 +44,12 @@ urlpatterns = [
     path('conferencechair_view_reviewer_ratings', conferencechair_controller.conferencechair_view_reviewer_ratings, name='conferencechair_view_reviewer_ratings'),
     path('conferencechair_AcceptPaper', conferencechair_controller.conferencechair_AcceptPaper, name='conferencechair_AcceptPaper'),
     path('conferencechair_RejectPaper', conferencechair_controller.conferencechair_RejectPaper, name='conferencechair_RejectPaper'),
+    
+    path('commentor_view_fully_reviewed_papers', commentor_controller.commentor_view_fully_reviewed_papers, name='commentor_view_fully_reviewed_papers'),
+    path('commentor_view_reviews', commentor_controller.commentor_view_reviews, name='commentor_view_reviews'),
+    path('commentor_view_review_comments', commentor_controller.commentor_view_review_comments, name='commentor_view_review_comments'),
+    path('commentor_add_comment', commentor_controller.commentor_add_comment, name='commentor_add_comment'),
+    path('commentor_AddComment', commentor_controller.commentor_AddComment, name='commentor_AddComment'),
 
     path('test_template', loginout_controller.test_template, name='test_template'),
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
