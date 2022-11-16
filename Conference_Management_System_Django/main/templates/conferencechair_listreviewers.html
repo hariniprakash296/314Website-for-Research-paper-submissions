@@ -12,16 +12,22 @@
         <th>Papers:</th>
         <th>Allocate:</th>
     </tr>
-    <tr>
-        <th>Jyotsna</th>
-        <th>Yes</th>
-        <th>Thesis on the black hole theory</th>
-        <th>Sarah</th>
-    </tr>
-    {% for paper in authored_papers%}
-    <tr>
-        <td></td>
-    </tr>
+    {% for paper in papers%}
+        <tr>
+            <form action="conferencechair_view_reviewers" method="post">
+                {% csrf_token %}                
+                <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                <tr>
+                    <td>
+                        {{ paper.paper_name }}
+                    </td>
+                    <td>
+                        <input type="submit" value="Allocate" style="align: center;">
+                    </td>
+                </tr>
+                        
+            </form>
+        </tr>
     {% endfor %}
 </table>
 {% endblock content %}
