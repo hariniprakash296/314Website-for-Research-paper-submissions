@@ -30,7 +30,7 @@
                         {{reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'currently_reviewing_count'}}
                     </td>
                     <td>
-                        <input type="submit" value="Allocate" style="align: center;">
+                        {% if not reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'is_allocated' %}<input type="submit" diabled="disabled" value="Allocate" style="align: center;"> {% else %} Paper has already been allocated to reviewer {% endif %} 
                     </td>
                 </tr>
                         
