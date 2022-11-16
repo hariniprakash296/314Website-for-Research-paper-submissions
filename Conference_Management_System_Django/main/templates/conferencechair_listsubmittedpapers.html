@@ -10,7 +10,7 @@
     </tr>
     {% for paper in papers%}
         <tr>
-            <form action="author_view_paper" method="post">
+            <form action="conferencechair_AllocatePaper" method="post">
                 {% csrf_token %}                
                 <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
                 <tr>
@@ -18,7 +18,7 @@
                         {{ paper.paper_name }}
                     </td>
                     <td>
-                        <input type="submit" value="View Paper" style="align: center;">
+                        <input type="submit" value="conferencechair_AllocatePaper" style="align: center;">
                     </td>
                 </tr>
                         
