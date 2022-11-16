@@ -1,0 +1,30 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+<table  cellspacing="10" width="100%">
+    <tr>
+        <th>Paper Name</th>
+        <th>Reviews</th>
+    </tr>
+    {% for paper in fully_reviewed_papers%}
+        <tr>
+            <form action="conferencechair_view_reviewer_ratings" method="post">
+                {% csrf_token %}                
+                <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                <tr>
+                    <td>
+                        {{ paper.paper_name }}
+                    </td>
+                    <td>
+                        <input type="submit" value="View Reviews" style="align: center;">
+                    </td>
+                </tr>
+                        
+            </form>
+        </tr>
+        {% endfor %}
+</table>
+</span>
+{% endblock content %}

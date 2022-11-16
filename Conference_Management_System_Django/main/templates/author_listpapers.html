@@ -15,7 +15,10 @@
                 Status
             </th>
             <th>
-                Select
+                View Paper
+            </th>
+            <th>
+                View Reviews
             </th>
         </tr>
         {% for paper in authored_papers%}
@@ -31,7 +34,10 @@
                         {{ paperstatus_dict|access_dict:paper.status }}
                     </td>
                     <td>
-                        <input type="submit" value="View Paper" style="align: center;">
+                        <input type="submit" id="user_buttons" style="color: aliceblue;" value="View Paper" formaction="author_view_paper">
+                    </td>
+                    <td>
+                        <input type="submit" {% if not reviewed_authored_papers|access_dict:paper.paper_id %} readonly {% endif %} id="user_buttons" style="color: aliceblue;" value="Submit Paper" formaction="author_view_all_reviews">
                     </td>
                 </tr>
                         

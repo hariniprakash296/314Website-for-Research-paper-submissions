@@ -1,0 +1,68 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+    <div id="myForm" style="font-family: Brush Script MT;">
+    <table style="font-family: Brush Script MT; font-size: 2rem;">
+        <tr>
+            <td>
+                Paper Title:
+                <input readonly type="text" id="demo" name="new_name" size="30" value={{ paper.paper_name }}> 
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center">
+            <label>Authors:</label><br />
+                    <textarea readonly form="ViewAllReviews" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
+                        >{{ author_name_string }}</textarea>
+                    <span style="color: red;" id="textRequired"></span>
+            <br/>
+            </td>
+        </tr>
+    </table>
+            
+    <table cellspacing="10" width="100%" border="1px solid"; border-color: "white" >
+        <tr>
+            <th>
+                Reviewer Name
+            </th>
+            <th>
+                Reviewer Rating
+            </th>
+            <th>
+                Author Rating
+            </th>
+            <th>
+                Select
+            </th>
+        </tr>
+        {% for review in reviews %}
+        <tr>
+            <form action="author_view_paper" method="post">
+                {% csrf_token %}                
+                <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
+                <tr>
+                    <td>
+                        {{ review.reviewer_user_id.name }}
+                    </td>
+                    <td> 
+                        {{ reviewrating_dict|access_dict:review.reviewer_rating }}
+                    </td>
+                    <td> 
+                        {{ reviewrating_dict|access_dict:review.author_rating }}
+                    </td>
+                    <td>
+                        <input type="submit" id="user_buttons" style="color: aliceblue;" value="View Review" formaction="author_view_review">
+                    </td>
+                </tr>
+                        
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+</span>
+{% endblock content %}

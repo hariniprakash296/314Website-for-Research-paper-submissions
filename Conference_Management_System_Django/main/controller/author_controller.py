@@ -81,7 +81,8 @@ def author_StartNewPaper(request):
 def author_list_papers(request, message=None):
     #requires: nothing
     #returns: authored_papers = list of all the papers that user is listed as author of
-    #return: paperstatus_dict
+    #return: reviewed_authored_papers = dict whether paper has been fully reviewed
+    #return: paperstatus_dict = dict of the statuses' labels
 
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
@@ -93,13 +94,20 @@ def author_list_papers(request, message=None):
     author = models.Author.objects.get(login_email=email)
 
     authored_papers = list()
+    reviewed_authored_papers = dict()
     try:
         all_writes = models.Writes.objects.filter(author_user_id=author.user_id)
 
         for writes in all_writes:
+            paper = writes.paper_id
             authored_papers.append(writes.paper_id)
+
+            reviews = models.Reviews.objects.filter(paper_id=paper)
+            unrated_reviews = reviews.exclude(reviewer_rating=models.Reviews.Rating.UNRATED)
+            reviewed_authored_papers[paper.paper_id] = (len(unrated_reviews) == 0 and len(reviews) > 0)
+
     except models.Writes.DoesNotExist as e:
-        print("No written papers.")
+        context["message"] = "No written papers."
 
     
     paperstatus_dict = dict()
@@ -210,7 +218,9 @@ def author_SubmitPaper(request):
 
 def author_view_all_reviews(request, message=None):
     #requires: paper_id = id of selected paper
+    #returns: paper = selected paper
     #returns: reviews = all the reviews of the paper that the user selected
+    #returns: reviewrating_dict = dict of the ratings' labels
 
     islogged_in = controller_util.check_login(request)
     is_author_logged_in = check_author_login(request)
@@ -223,8 +233,15 @@ def author_view_all_reviews(request, message=None):
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
 
+        paper = models.Paper.objects.get(paper_id=paper_id)
+        context["paper"] = paper
         reviews = models.Reviews.objects.filter(paper_id=paper_id)
         context["reviews"] = reviews
+
+    reviewrating_dict = dict()
+    for key, value in models.Reviews.Rating.choices:
+        reviewrating_dict[key] = value
+    context["reviewrating_dict"] = reviewrating_dict
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -257,6 +274,7 @@ def author_view_review(request, message=None):
 
 def author_GiveRating(request):
     #requires: review_id = id of selected review
+    #requires: rating = rating of the author to save
     #returns: review = the review that the user selected
 
     islogged_in = controller_util.check_login(request)

@@ -1,0 +1,63 @@
+{%extends "upper_menu.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/style_common.css' %}">
+
+{% block content %}
+<span style="font-size: 1.5rem; font-family: sans-serif;">
+    <div id="myForm" style="font-family: Brush Script MT;">
+        <form action="" method="post" id="AuthorRateReview">
+            {% csrf_token %}
+            <input type="hidden" name="review_id" value = {{review.review_id}}>
+            <table style="font-family: Brush Script MT; font-size: 2rem;">
+                <tr>
+                    <td>
+                        Paper Title:
+                        <input readonly type="text" id="demo" name="new_name" size="30" value={{ paper.paper_name }}> 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center">
+                    <label>Authors:</label><br />
+                            <textarea readonly form="AuthorRateReview" name="author_emails" id="message" rows="5" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter the authors' emails separated by commas &#13;&#10;For eg. authorA@gmail.com, authorB@gmail.com"
+                                >{{ author_name_string }}</textarea>
+                            <span style="color: red;" id="textRequired"></span>
+                    <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center">
+                        <input readonly type="text" id="demo" name="new_name" size="30" value={{review.reviewer_user_id.name}}> 
+                    </td>
+                    <td style="text-align: center">
+                        <textarea readonly form="AuthorRateReview" name="review_details" id="message2" rows="10" cols="100" name="text" style="font-family: Times-New-Roman; font-size: 1rem;" placeholder="Please enter your review details."
+                            >{{ review.review_details }}</textarea>
+                        <span style="color: red;" id="textRequired"></span>
+                    <br/>
+                    </td>
+                    <td style="text-align: center">
+                        {{reviewrating_dict|access_dict:review.reviewer_rating}}
+                    </td>
+                </tr>
+                <br/>
+                <tr>
+                    <td style="text-align: center">
+                        <label>Rating: </label>
+                        <select name="rating" id="rating">
+                            {% for key, val in %}
+                                <option value={{ key }} selected>{{ val }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <br/>
+                        <label>Rating will not be saved unless review is submitted.</label>
+                    <br/>
+                    </td>
+                </tr>
+            </table>
+            
+            <input type="submit" id="user_buttons" style="color: aliceblue;" value="Submit Review" formaction="author_GiveRating">
+        </form>
+    </div>
+</span>
+{% endblock content %}

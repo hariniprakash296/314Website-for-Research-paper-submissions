@@ -25,6 +25,9 @@ urlpatterns = [
     path('author_view_paper', author_controller.author_view_paper, name='view_paper'),
     path('author_SavePaper', author_controller.author_SavePaper, name='save_paper'),
     path('author_SubmitPaper', author_controller.author_SubmitPaper, name='submit_paper'),
+    path('author_view_all_reviews', author_controller.author_view_all_reviews, name='author_view_all_reviews'),
+    path('author_view_review', author_controller.author_view_review, name='author_view_review'),
+    path('author_GiveRating', author_controller.author_GiveRating, name='author_GiveRating'),
     
     path('reviewer_list_biddable_papers', reviewer_controller.reviewer_list_biddable_papers, name='reviewer_list_biddable_papers'),
     path('reviewer_BidPaper', reviewer_controller.reviewer_BidPaper, name='reviewer_BidPaper'),
@@ -39,7 +42,8 @@ urlpatterns = [
     path('conferencechair_AllocatePaper', conferencechair_controller.conferencechair_AllocatePaper, name='conferencechair_AllocatePaper'),
     path('conferencechair_view_reviewed_papers', conferencechair_controller.conferencechair_view_reviewed_papers, name='conferencechair_view_reviewed_papers'),
     path('conferencechair_view_reviewer_ratings', conferencechair_controller.conferencechair_view_reviewer_ratings, name='conferencechair_view_reviewer_ratings'),
-    path('conferencechair_AcceptRejectPaper', conferencechair_controller.conferencechair_AcceptRejectPaper, name='conferencechair_AcceptRejectPaper'),
+    path('conferencechair_AcceptPaper', conferencechair_controller.conferencechair_AcceptPaper, name='conferencechair_AcceptPaper'),
+    path('conferencechair_RejectPaper', conferencechair_controller.conferencechair_RejectPaper, name='conferencechair_RejectPaper'),
 
     path('test_template', loginout_controller.test_template, name='test_template'),
     path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),

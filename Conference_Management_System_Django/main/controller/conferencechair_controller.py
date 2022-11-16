@@ -202,8 +202,10 @@ def conferencechair_view_reviewed_papers(request, message=None):
 
 def conferencechair_view_reviewer_ratings(request, message=None):
     #requires: paper_id = id of selected paper
+    #returns: paper = selected paper
     #returns: reviews = list of reviews of selected paper
     #returns: reviewer = dictionary of all the reviewers of the reviews
+    #returns: reviewrating_dict = dict of the ratings' labels
 
     islogged_in = controller_util.check_login(request)
     is_conferencechair_logged_in = check_conferencechair_login(request)
@@ -227,14 +229,20 @@ def conferencechair_view_reviewer_ratings(request, message=None):
             reviewer = review.reviewer_user_id
             reviewers[review.review_id] = reviewer
 
-    context["review"] = review
-    context["reviewer"] = reviewer
+        paper = models.Paper.objects.get(paper_id=paper_id)
+        context["paper"] = paper
+        context["review"] = review
+        context["reviewer"] = reviewer
+    
+    reviewrating_dict = dict()
+    for key, value in models.Reviews.Rating.choices:
+        reviewrating_dict[key] = value
+    context["reviewrating_dict"] = reviewrating_dict
 
     return render(request,"conferencechair_viewreviewerreviews.html", context)
 
-def conferencechair_AcceptRejectPaper(request):
+def conferencechair_AcceptPaper(request):
     #requires: paper_id = id of selected paper
-    #requires: choice = whether to accept or reject paper. "True" for accept, "False" for reject
     #returns: fully_reviewed_papers = list of all the papers that have been reviewed by all the reviewers allocated
 
     islogged_in = controller_util.check_login(request)
@@ -247,7 +255,33 @@ def conferencechair_AcceptRejectPaper(request):
 
     if request.method == "POST":
         paper_id = request.POST.get('paper_id')
-        choice = eval(request.POST.get('choice'))
+        choice = True
+
+        new_status = models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDACCEPTED if choice else models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDREJECTED
+
+        paper = models.Paper.objects.get(paper_id=paper_id)
+        paper.status = new_status
+        paper.save()
+
+        choice_text = "accepted" if choice else "rejected"
+
+        return conferencechair_view_reviewed_papers(request, "The paper has successfully been "+choice_text)
+
+def conferencechair_RejectPaper(request):
+    #requires: paper_id = id of selected paper
+    #returns: fully_reviewed_papers = list of all the papers that have been reviewed by all the reviewers allocated
+
+    islogged_in = controller_util.check_login(request)
+    is_conferencechair_logged_in = check_conferencechair_login(request)
+
+    if not (islogged_in and is_conferencechair_logged_in):
+        return conferencechair_error_handle(request)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
+
+    if request.method == "POST":
+        paper_id = request.POST.get('paper_id')
+        choice = False
 
         new_status = models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDACCEPTED if choice else models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDREJECTED
 
