@@ -11,16 +11,14 @@
     {% for paper in papers%}
         <tr>
             <form action="conferencechair_view_reviewers" method="post">
-                {% csrf_token %}                
+                {% csrf_token %}
                 <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
                 <tr>
                     <td>
                         {{ paper.paper_name }}
                     </td>
                     <td>
-                        <a href="conferencechair_listreviewers.html">
                         <input type="submit" value="Allocate" style="align: center;">
-                        </a>
                     </td>
                 </tr>
                         

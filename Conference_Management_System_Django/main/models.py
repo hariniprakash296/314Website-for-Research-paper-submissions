@@ -38,12 +38,9 @@ class Reviewer(User):
     def get_currently_reviewing_count(self):
         currently_reviewing_count = 0
         try:
-            currently_reviewing = Reviews.objects.filter(reviewer_user_id__user_id=self.user_id, reviewer_rating=models.Reviews.Rating.UNRATED)
+            currently_reviewing = Reviews.objects.filter(reviewer_user_id=self, reviewer_rating=Reviews.Rating.UNRATED)
 
-            if type(currently_reviewing) is list:
-                currently_reviewing_count = len(currently_reviewing)
-            else:
-                currently_reviewing_count = 1
+            currently_reviewing_count = len(currently_reviewing)
         except Reviews.DoesNotExist as e:
             currently_reviewing_count = 0
 
@@ -54,9 +51,9 @@ class Reviewer(User):
 
     def is_reviewer_of_paper(self, paper_id):
         try:
-            reviews = Reviews.objects.get(reviewer_user_id=self.user_id, paper_id=paper_id)
+            reviews = Reviews.objects.get(reviewer_user_id=self, paper_id=paper_id)
             return True
-        except models.Reviews.DoesNotExist as e:
+        except Reviews.DoesNotExist as e:
             return False
 
 
@@ -162,7 +159,7 @@ class Reviews(models.Model):
         try:
             review = Reviews.objects.get(reviewer_user_id=reviewer_user_id, paper_id=paper_id)
             return (True, review)
-        except Bids.DoesNotExist as e:
+        except Reviews.DoesNotExist as e:
             return (False, None)
 
 class ReviewComments(models.Model):
