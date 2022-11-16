@@ -135,11 +135,9 @@ def emergency_manual_method(request):
     #         user.delete()
     #     except Exception as e:
     #         print(e)
-
-    for paper in models.Paper.objects.all():
-        if paper.paper_name == "":
-            paper.paper_name = "Temp Title"
-            paper.save()
+    
+    email = "asdasdasd"
+    print(str(len(models.User.objects.filter(login_email=email))))
 
     return index(request)
 

@@ -207,3 +207,75 @@ def author_SubmitPaper(request):
             return author_view_paper(request, "Paper successfully submitted.")
         except models.Writes.DoesNotExist as e:
             return author_list_papers(request, "Not author of selected paper.")
+
+def author_view_all_reviews(request, message=None):
+    #requires: paper_id = id of selected paper
+    #returns: reviews = all the reviews of the paper that the user selected
+
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_author_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return author_error_handle(request)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
+
+    if request.method == "POST":
+        paper_id = request.POST.get('paper_id')
+
+        reviews = models.Reviews.objects.filter(paper_id=paper_id)
+        context["reviews"] = reviews
+
+    if message != None and not "message" in context:
+        context["message"] = message
+
+    return render(request,"author_viewallreviews.html", context)
+    
+def author_view_review(request, message=None):
+    #requires: review_id = id of selected review
+    #returns: review = the review that the user selected
+    #returns: reviewrating_dict = dict of the ratings' labels
+
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_author_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return author_error_handle(request)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
+    if request.method == "POST":
+        review_id = request.POST.get('review_id')
+        review = models.Reviews.objects.get(review_id=review_id)
+        context["review"] = review    
+
+    reviewrating_dict = dict()
+    for key, value in models.Reviews.Rating.choices:
+        reviewrating_dict[key] = value
+    context["reviewrating_dict"] = reviewrating_dict
+
+    return render(request,"author_viewreview.html", context)
+
+def author_GiveRating(request):
+    #requires: review_id = id of selected review
+    #returns: review = the review that the user selected
+
+    islogged_in = controller_util.check_login(request)
+    is_author_logged_in = check_author_login(request)
+
+    if not (islogged_in and is_author_logged_in):
+        return author_error_handle(request)
+
+    context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type')}
+    if request.method == "POST":
+        review_id = request.POST.get('review_id')
+        review = models.Reviews.objects.get(review_id=review_id)
+    
+        rating = int(request.POST.get('rating'))
+
+        if rating == models.Reviews.Rating.UNRATED:
+            return author_view_review(request, "Please select a rating to give the paper.")
+
+        review.author_rating = rating
+        review.save()
+
+        return author_view_all_reviews(request, "Successfully rated review.")

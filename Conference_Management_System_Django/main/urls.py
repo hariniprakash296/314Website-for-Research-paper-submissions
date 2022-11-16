@@ -28,7 +28,7 @@ urlpatterns = [
     
     path('reviewer_list_biddable_papers', reviewer_controller.reviewer_list_biddable_papers, name='reviewer_list_biddable_papers'),
     path('reviewer_BidPaper', reviewer_controller.reviewer_BidPaper, name='reviewer_BidPaper'),
-    path('reviewer_list_reviewed_papers', reviewer_controller.reviewer_list_reviewed_papers, name='reviewer_list_reviewed_papers'),
+    path('reviewer_list_reviewed_papers', reviewer_controller.reviewer_list_unreviewed_papers, name='reviewer_list_reviewed_papers'),
     path('reviewer_view_paper', reviewer_controller.reviewer_view_paper, name='reviewer_view_paper'),
     path('reviewer_give_review', reviewer_controller.reviewer_give_review, name='reviewer_give_review'),
     path('reviewer_SaveReview', reviewer_controller.reviewer_SaveReview, name='reviewer_SaveReview'),

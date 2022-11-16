@@ -86,7 +86,7 @@ def reviewer_BidPaper(request):
             return reviewer_list_biddable_papers(request, "Error: Reviewer account cannot be found.")
     
 
-def reviewer_list_reviewed_papers(request, message=None):
+def reviewer_list_unreviewed_papers(request, message=None):
     #requires: nothing
     #returns: reviewed_papers = list of all the papers that user is listed as reviewer of
     islogged_in = controller_util.check_login(request)
@@ -115,7 +115,6 @@ def reviewer_view_paper(request, message=None):
     #requires: paper_id = id of selected paper
     #returns: selected_paper = all the details of the paper that the user selected
     #returns: author_name_string = names of all the authors of the selected paper
-    #return: reviewrating_dict
 
     islogged_in = controller_util.check_login(request)
     is_reviewer_logged_in = check_reviewer_login(request)
@@ -132,17 +131,12 @@ def reviewer_view_paper(request, message=None):
         reviewer = models.Reviewer.objects.get(login_email=email)
 
         if not reviewer.is_reviewer_of_paper(paper_id):
-            return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
+            return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
 
         context['author_name_string'] = models.Writes.get_names_of_authors(paper_id)
 
         paper = models.Paper.objects.get(paper_id=paper_id)
         context["selected_paper"] = paper
-        
-    reviewrating_dict = dict()
-    for key, value in models.Reviews.Rating.choices:
-        reviewrating_dict[key] = value
-    context["reviewrating_dict"] = reviewrating_dict
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -154,6 +148,8 @@ def reviewer_give_review(request, message=None):
     #returns: selected_paper = all the details of the paper that the user selected
     #returns: authors = all the authors of the selected paper
     #returns: review = details of the saved review
+    #returns: reviewrating_dict = dict of the ratings' labels
+
     islogged_in = controller_util.check_login(request)
     is_reviewer_logged_in = check_reviewer_login(request)
 
@@ -169,19 +165,24 @@ def reviewer_give_review(request, message=None):
         reviewer = models.Reviewer.objects.get(login_email=email)
 
         if not reviewer.is_reviewer_of_paper(paper_id):
-            return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
+            return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
 
         context["authors"] = models.Author.get_all_authors_of_paper(paper_id)
         
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
         
         if review.reviewer_rating != models.Reviews.Rating.UNRATED:
-            return reviewer_list_reviewed_papers(request, "You have already reviewed the paper.")
+            return reviewer_list_unreviewed_papers(request, "You have already reviewed the paper.")
 
         context["review"] = review
 
         paper = review.paper_id
         context["selected_paper"] = paper
+        
+    reviewrating_dict = dict()
+    for key, value in models.Reviews.Rating.choices:
+        reviewrating_dict[key] = value
+    context["reviewrating_dict"] = reviewrating_dict
 
     if message != None and not "message" in context:
         context["message"] = message
@@ -207,7 +208,7 @@ def reviewer_SaveReview(request):
         reviewer = models.Reviewer.objects.get(login_email=email)
 
         if not reviewer.is_reviewer_of_paper(paper_id):
-            return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
+            return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
 
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
@@ -234,7 +235,7 @@ def reviewer_GiveRating(request):
         reviewer = models.Reviewer.objects.get(login_email=email)
 
         if not reviewer.is_reviewer_of_paper(paper_id):
-            return reviewer_list_reviewed_papers(request, "Not reviewer of selected paper")
+            return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
 
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
             
@@ -249,7 +250,7 @@ def reviewer_GiveRating(request):
         review.reviewer_rating = rating
         review.save()
 
-    return reviewer_list_reviewed_papers(request, "Successfully submitted your review.")
+    return reviewer_list_unreviewed_papers(request, "Successfully submitted your review.")
 
 
 
