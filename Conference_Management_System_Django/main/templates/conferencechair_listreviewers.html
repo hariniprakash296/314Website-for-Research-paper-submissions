@@ -1,6 +1,7 @@
 {%extends "upper_menu.html" %}
 
 {% load static %}
+{% load template_extras %}
 <link rel="stylesheet" href="{% static '/css/style_common.css' %}">
 
 {% block content %}
@@ -12,14 +13,21 @@
         <th>Papers:</th>
         <th>Allocate:</th>
     </tr>
-    {% for paper in papers%}
+    {% for reviewer in reviewers%}
         <tr>
-            <form action="conferencechair_view_reviewers" method="post">
+            <form action="conferencechair_AllocatePaper" method="post">
                 {% csrf_token %}                
+                <input type="hidden" name="reviewer_user_id" value = {{reviewer.user_id}}>
                 <input type="hidden" name="paper_id" value = {{paper.paper_id}}>
                 <tr>
                     <td>
-                        {{ paper.paper_name }}
+                        {{reviewer.name}}
+                    </td>
+                    <td>
+                        {{reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'is_bid'}}
+                    </td>
+                    <td>
+                        {{reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'currently_reviewing_count'}}
                     </td>
                     <td>
                         <input type="submit" value="Allocate" style="align: center;">
