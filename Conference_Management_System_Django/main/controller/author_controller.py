@@ -116,8 +116,8 @@ def author_list_papers(request, message=None):
     paperstatus_dict = dict()
     for key, value in models.Paper.PaperStatus.choices:
         paperstatus_dict[key] = value
-
     context['paperstatus_dict'] = paperstatus_dict
+    
     if message != None and not "message" in context:
         context["message"] = message
 
@@ -293,6 +293,9 @@ def author_GiveRating(request):
         review = models.Reviews.objects.get(review_id=review_id)
     
         rating = int(request.POST.get('rating'))
+        
+        if review.author_rating != models.Reviews.Rating.UNRATED:
+            return author_view_review(request, "You have aleady rated this review.")
 
         if rating == models.Reviews.Rating.UNRATED:
             return author_view_review(request, "Please select a rating to give the paper.")

@@ -210,6 +210,9 @@ def reviewer_SaveReview(request):
 
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
+        
+        if review.reviewer_rating != models.Reviews.Rating.UNRATED:
+            return reviewer_view_paper(request, "You have aleady rated this paper.")
 
         review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
@@ -244,6 +247,9 @@ def reviewer_GiveRating(request):
         review.save()
 
         rating = int(request.POST.get('rating'))
+        
+        if review.reviewer_rating != models.Reviews.Rating.UNRATED:
+            return reviewer_view_paper(request, "You have aleady rated this review.")
 
         if rating == models.Reviews.Rating.UNRATED:
             return reviewer_view_paper(request, "Please select a rating to give the paper.")

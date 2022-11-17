@@ -97,6 +97,12 @@ class Paper(models.Model):
         unrated_reviews = reviews.filter(reviewer_rating=Reviews.Rating.UNRATED)
         completed_reviews = reviews.exclude(reviewer_rating=Reviews.Rating.UNRATED)
         return (len(unrated_reviews) == 0 and len(reviews) == len(completed_reviews) and len(reviews) > 0)
+        
+    def is_paper_reviews_author_rated(self):
+        reviews = Reviews.objects.filter(paper_id=self)
+        unrated_reviews = reviews.filter(author_rating=Reviews.Rating.UNRATED)
+        completed_reviews = reviews.exclude(author_rating=Reviews.Rating.UNRATED)
+        return self.is_paper_fully_reviewed() and (len(unrated_reviews) == 0 and len(reviews) == len(completed_reviews) and len(reviews) > 0)
     
 #relationships
 class Bids(models.Model):

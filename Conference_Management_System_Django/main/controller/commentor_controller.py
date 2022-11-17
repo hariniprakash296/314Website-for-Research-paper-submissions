@@ -67,20 +67,17 @@ def commentor_view_fully_reviewed_papers(request, message=None):
     for paper in papers:
         paper_id = paper.paper_id
 
-        fully_reviewed = True
-        try:
-            reviews = models.Reviews.objects.filter(paper_id=paper_id)
-            for review in reviews:
-                if review.author_rating == models.Reviews.Rating.UNRATED:
-                    fully_reviewed = False
-                    break
-        except models.Reviews.DoesNotExist as e:
-            fully_reviewed = False
+        fully_reviewed = paper.is_paper_reviews_author_rated()
 
         if fully_reviewed:
             fully_reviewed_papers.append(paper)
 
     context['fully_reviewed_papers'] = fully_reviewed_papers
+    
+    paperstatus_dict = dict()
+    for key, value in models.Paper.PaperStatus.choices:
+        paperstatus_dict[key] = value
+    context['paperstatus_dict'] = paperstatus_dict
 
     if message != None and not "message" in context:
         context["message"] = message

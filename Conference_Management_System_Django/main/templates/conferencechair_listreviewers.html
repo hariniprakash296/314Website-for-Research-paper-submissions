@@ -24,7 +24,7 @@
                         {{reviewer.name}}
                     </td>
                     <td>
-                        {{reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'is_bid'}}
+                        <input type="checkbox" {% if reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'is_bid' %} checked {% endif %} disabled>
                     </td>
                     <td>
                         {{reviewer_additional_info|access_dict:reviewer.user_id|access_dict:'currently_reviewing_count'}}

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .controller import loginout_controller, sysadmin_controller, author_controller, reviewer_controller, conferencechair_controller, commentor_controller
+from .controller import loginout_controller, sysadmin_controller, author_controller, reviewer_controller, conferencechair_controller, commentor_controller, test_controller
 from . import views
 #from .controller import *
 from django.conf import settings
@@ -51,8 +51,9 @@ urlpatterns = [
     path('commentor_add_comment', commentor_controller.commentor_add_comment, name='commentor_add_comment'),
     path('commentor_AddComment', commentor_controller.commentor_AddComment, name='commentor_AddComment'),
 
-    path('test_template', loginout_controller.test_template, name='test_template'),
-    path('emergency_manual_method', loginout_controller.emergency_manual_method, name='emergency_manual_method'),
+    path('test_template', test_controller.test_template, name='test_template'),
+    path('emergency_manual_method', test_controller.emergency_manual_method, name='emergency_manual_method'),
+    path('acceptrejectpaper', test_controller.acceptrejectpaper, name='acceptrejectpaper'),
 
     path('conferences',views.conferences, name="conferences"),
     path('add_conference_handle',views.add_conference_handle, name="add_conference_handle"),

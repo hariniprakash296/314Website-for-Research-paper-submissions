@@ -178,18 +178,7 @@ def conferencechair_view_reviewed_papers(request, message=None):
     papers = models.Paper.objects.filter(status=models.Paper.PaperStatus.PAPERSTATUS_SUBMITTEDPENDING)
 
     for paper in papers:
-        paper_id = paper.paper_id
-
-        fully_reviewed = True
-        reviews = models.Reviews.objects.filter(paper_id=paper_id)
-
-        if len(reviews) == 0:
-            fully_reviewed = False
-        else:
-            for review in reviews:
-                if review.reviewer_rating == models.Reviews.Rating.UNRATED:
-                    fully_reviewed = False
-                    break
+        fully_reviewed = paper.is_paper_fully_reviewed()
 
         if fully_reviewed:
             fully_reviewed_papers.append(paper)
@@ -197,6 +186,11 @@ def conferencechair_view_reviewed_papers(request, message=None):
         context["message"] = "There are no submitted papers that have been fully reviewed by their allocated reviewers."
 
     context["fully_reviewed_papers"] = fully_reviewed_papers
+
+    paperstatus_dict = dict()
+    for key, value in models.Paper.PaperStatus.choices:
+        paperstatus_dict[key] = value
+    context['paperstatus_dict'] = paperstatus_dict
 
     if message != None and not "message" in context:
         context["message"] = message
