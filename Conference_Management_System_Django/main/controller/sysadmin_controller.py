@@ -242,44 +242,9 @@ def admin_UpdateUser(request):
         user_id = request.POST.get('user_id')
         
         user = models.User.objects.get(user_id=user_id)
-        user_type = user.user_type
-
-        if user_type == models.User.UserType.USERTYPE_SYSTEMADMIN:
-            #0 = system admin
-            user = models.SystemAdmin.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_CONFERENCECHAIR:
-            #1 = conference chair
-            user = models.ConferenceChair.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_REVIEWER:
-            #2 = reviewer
-            user = models.Reviewer.objects.get(user_id=user_id)
-            
-        elif user_type == models.User.UserType.USERTYPE_AUTHOR:
-            #3 = author
-            user = models.Author.objects.get(user_id=user_id)
-
-        new_user_type = None
-        new_user_type_str = request.POST.get('new_user_type')
-        if new_user_type_str == "admin":
-            #0 = system admin
-            new_user_type = models.User.UserType.USERTYPE_SYSTEMADMIN
-            
-        elif new_user_type_str == "chair":
-            #1 = conference chair
-            new_user_type = models.User.UserType.USERTYPE_CONFERENCECHAIR
-            
-        elif new_user_type_str == "reviewer":
-            #2 = reviewer
-            new_user_type = models.User.UserType.USERTYPE_REVIEWER
-            
-        elif new_user_type_str == "author":
-            new_user_type = models.User.UserType.USERTYPE_AUTHOR
             
         user.login_email = request.POST.get('new_email')
         user.name = request.POST.get('new_name')
-        user.user_type = new_user_type
         
         password = request.POST.get('new_password').strip()
         if password != None and password != "":

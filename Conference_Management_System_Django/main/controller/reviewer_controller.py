@@ -107,6 +107,9 @@ def reviewer_list_unreviewed_papers(request, message=None):
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers}
 
+    if len(reviewed_papers) == 0:
+        context["message"] = "There are no papers allocated to you that have not been reviewed."
+
     if message != None and not "message" in context:
         context["message"] = message
 
@@ -210,11 +213,11 @@ def reviewer_SaveReview(request):
 
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
+
+        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
         
         if review.reviewer_rating != models.Reviews.Rating.UNRATED:
             return reviewer_view_paper(request, "You have aleady rated this paper.")
-
-        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
         review.review_details = request.POST.get('new_details')
         review.save()
