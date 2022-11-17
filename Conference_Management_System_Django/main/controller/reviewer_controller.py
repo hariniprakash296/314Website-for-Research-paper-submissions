@@ -213,11 +213,11 @@ def reviewer_SaveReview(request):
 
         if not reviewer.is_reviewer_of_paper(paper_id):
             return reviewer_list_unreviewed_papers(request, "Not reviewer of selected paper")
+
+        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
         
         if review.reviewer_rating != models.Reviews.Rating.UNRATED:
             return reviewer_view_paper(request, "You have aleady rated this paper.")
-
-        review = models.Reviews.objects.get(reviewer_user_id=reviewer, paper_id=paper_id)
 
         review.review_details = request.POST.get('new_details')
         review.save()
