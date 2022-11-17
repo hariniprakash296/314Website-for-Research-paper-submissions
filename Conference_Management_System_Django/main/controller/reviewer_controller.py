@@ -107,6 +107,9 @@ def reviewer_list_unreviewed_papers(request, message=None):
 
     context = {"islogged_in":islogged_in,"is_admin_logged_in":False,"user_type":request.COOKIES.get('user_type'), "reviewed_papers":reviewed_papers}
 
+    if len(reviewed_papers) == 0:
+        context["message"] = "There are no papers allocated to you that have not been reviewed."
+
     if message != None and not "message" in context:
         context["message"] = message
 
